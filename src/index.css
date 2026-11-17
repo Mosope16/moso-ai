@@ -1,0 +1,197 @@
+@import 'katex/dist/katex.min.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    background-color: #08090d;
+    color: #ebeef5;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Custom sleek scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #272c3d;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #383e54;
+}
+
+/* Markdown styling inside assistant message */
+.prose-moso {
+  color: #ebeef5;
+  font-size: 0.9375rem;
+  line-height: 1.68;
+}
+
+.prose-moso p {
+  margin-top: 0.65rem;
+  margin-bottom: 0.65rem;
+}
+
+.prose-moso p:first-child {
+  margin-top: 0;
+}
+
+.prose-moso p:last-child {
+  margin-bottom: 0;
+}
+
+.prose-moso h1,
+.prose-moso h2,
+.prose-moso h3,
+.prose-moso h4 {
+  color: #f7f8fb;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose-moso h1 { font-size: 1.35rem; }
+.prose-moso h2 { font-size: 1.15rem; }
+.prose-moso h3 { font-size: 1.025rem; }
+
+.prose-moso ul {
+  list-style-type: disc;
+  padding-left: 1.25rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose-moso ol {
+  list-style-type: decimal;
+  padding-left: 1.25rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose-moso li {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.prose-moso code:not(pre code) {
+  background-color: #171a24;
+  color: #34d399;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.375rem;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  border: 1px solid #272c3d;
+}
+
+.prose-moso blockquote {
+  border-left: 3px solid #10b981;
+  padding-left: 0.875rem;
+  margin-left: 0;
+  margin-right: 0;
+  color: #a5adc4;
+  font-style: italic;
+}
+
+.prose-moso a {
+  color: #34d399;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.prose-moso a:hover {
+  color: #6ee7b7;
+}
+
+.prose-moso table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.875rem;
+}
+
+.prose-moso th,
+.prose-moso td {
+  border: 1px solid #272c3d;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.prose-moso th {
+  background-color: #171a24;
+  color: #f7f8fb;
+  font-weight: 600;
+}
+
+.prose-moso tr:nth-child(even) {
+  background-color: rgba(23, 26, 36, 0.4);
+}
+
+/* Pulsing typing cursor */
+.typing-cursor::after {
+  content: '▋';
+  display: inline-block;
+  color: #10b981;
+  font-size: 0.85em;
+  margin-left: 3px;
+  animation: cursorBlink 0.9s infinite;
+}
+
+/* KaTeX math expression styling */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5rem 0;
+  margin: 0.75rem 0;
+  max-width: 100%;
+}
+
+.katex-display > .katex {
+  max-width: 100%;
+  text-align: center;
+}
+
+.katex {
+  font-size: 1.05em;
+  text-rendering: auto;
+}
+
+.katex-error {
+  color: #f87171 !important;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Tauri window drag support */
+[data-tauri-drag-region] {
+  app-region: drag;
+  -webkit-app-region: drag;
+}
+
+button, input, textarea, a, select, [data-tauri-no-drag] {
+  app-region: no-drag;
+  -webkit-app-region: no-drag;
+}

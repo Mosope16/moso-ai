@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" fill="none">
+  <defs>
+    <linearGradient id="moso-grad" x1="8" y1="4" x2="40" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="50%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <linearGradient id="moso-grad-dark" x1="12" y1="12" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#064e3b" />
+      <stop offset="100%" stop-color="#022c22" />
+    </linearGradient>
+  </defs>
+  <!-- Background shape -->
+  <rect x="4" y="4" width="40" height="40" rx="12" fill="#12141c" stroke="#232738" stroke-width="1.5"/>
+  <!-- Moso Stylized Bamboo Node & 'M' structure -->
+  <path d="M14 34V15C14 13.8954 14.8954 13 16 13C17.1046 13 18 13.8954 18 15V34" stroke="url(#moso-grad)" stroke-width="3" stroke-linecap="round"/>
+  <path d="M30 34V15C30 13.8954 30.8954 13 32 13C33.1046 13 34 13.8954 34 15V34" stroke="url(#moso-grad)" stroke-width="3" stroke-linecap="round"/>
+  <!-- Central interconnecting node forming M -->
+  <path d="M17 19L24 27L31 19" stroke="url(#moso-grad)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Bamboo node segment ring accents -->
+  <line x1="12.5" y1="24" x2="19.5" y2="24" stroke="#34d399" stroke-width="2" stroke-linecap="round"/>
+  <line x1="28.5" y1="24" x2="35.5" y2="24" stroke="#34d399" stroke-width="2" stroke-linecap="round"/>
+  <!-- Ambient node core -->
+  <circle cx="24" cy="27" r="2" fill="#34d399" />
+</svg>
