@@ -1,4 +1,5 @@
 export type ConnectionState = 'connected' | 'connecting' | 'disconnected' | 'generating';
+export type WorkspaceMode = 'chat' | 'project';
 
 export interface ModelInfo {
   id: string;
@@ -13,15 +14,27 @@ export interface ModelInfo {
   context_length?: number;
 }
 
+export interface Citation {
+  id?: string;
+  document_id: string;
+  filename: string;
+  document_name?: string;
+  page_number: number;
+  excerpt: string;
+}
+
 export interface DocumentInfo {
   id: string;
-  conversation_id: string;
+  conversation_id?: string;
+  project_id?: string;
   filename: string;
   file_size: number;
   page_count: number;
   char_count?: number;
+  chunk_count?: number;
   created_at: string;
   status?: string;
+  extraction_status?: string;
 }
 
 export interface Message {
@@ -29,6 +42,7 @@ export interface Message {
   conversation_id: string;
   role: 'user' | 'assistant' | 'system';
   content: string;
+  citations?: Citation[];
   created_at: string;
   is_streaming?: boolean;
   error?: string;
@@ -41,9 +55,48 @@ export interface Conversation {
   created_at: string;
   updated_at: string;
   model: string;
+  project_id?: string;
   message_count?: number;
+  document_count?: number;
   messages?: Message[];
   documents?: DocumentInfo[];
+}
+
+export interface ProjectNote {
+  id: string;
+  project_id: string;
+  title: string;
+  content: string;
+  category: 'note' | 'finding' | 'experiment' | 'methodology';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProjectActivity {
+  id: string;
+  project_id: string;
+  action_type?: string;
+  description?: string;
+  action?: string;
+  details?: string;
+  created_at: string;
+}
+
+export interface Project {
+  id: string;
+  name: string;
+  description: string;
+  instructions?: string;
+  custom_instructions?: string;
+  created_at: string;
+  updated_at: string;
+  document_count?: number;
+  conversation_count?: number;
+  note_count?: number;
+  documents?: DocumentInfo[];
+  conversations?: Conversation[];
+  notes?: ProjectNote[];
+  activity?: ProjectActivity[];
 }
 
 export interface HealthResponse {
@@ -94,3 +147,9 @@ export interface PromptSuggestion {
   prompt: string;
   icon: string;
 }
+
+export interface AuthStatusResponse {
+  auth_required: boolean;
+  authenticated: boolean;
+}
+

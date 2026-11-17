@@ -3,7 +3,9 @@ import { AppProvider, useApp } from './context/AppContext';
 import { Sidebar } from './components/sidebar/Sidebar';
 import { Header } from './components/header/Header';
 import { ChatArea } from './components/chat/ChatArea';
+import { ProjectWorkspace } from './components/project/ProjectWorkspace';
 import { SettingsModal } from './components/settings/SettingsModal';
+import { TesterPasswordModal } from './components/auth/TesterPasswordModal';
 import { AlertCircle, X } from 'lucide-react';
 
 const AppContent: React.FC = () => {
@@ -15,6 +17,7 @@ const AppContent: React.FC = () => {
     clearErrorNotification,
     isMockMode,
     toggleMockMode,
+    workspaceMode,
   } = useApp();
 
   // Global Keyboard Shortcuts
@@ -75,11 +78,14 @@ const AppContent: React.FC = () => {
           </div>
         )}
 
-        {/* Chat Conversation Area */}
-        <ChatArea />
+        {/* Chat / Project Workspace Area */}
+        {workspaceMode === 'project' ? <ProjectWorkspace /> : <ChatArea />}
 
         {/* Settings Dialog */}
         <SettingsModal />
+
+        {/* Public Tester Password Gate Modal */}
+        <TesterPasswordModal />
       </main>
     </div>
   );

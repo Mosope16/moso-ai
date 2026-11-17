@@ -7,6 +7,7 @@ import {
   Radio,
   Check,
   Cpu,
+  Lock,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Button } from '../ui/Button';
@@ -29,6 +30,11 @@ export const Header: React.FC = () => {
     openSettings,
     createNewConversation,
     renameConversation,
+    workspaceMode,
+    activeProject,
+    isAuthRequired,
+    isAuthenticated,
+    logoutSession,
   } = useApp();
 
   const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false);
@@ -138,7 +144,7 @@ export const Header: React.FC = () => {
           <Button
             variant="ghost"
             size="icon-sm"
-            onClick={createNewConversation}
+            onClick={() => createNewConversation()}
             aria-label="New chat"
             className="text-moso-300 hover:text-white"
           >
@@ -146,9 +152,18 @@ export const Header: React.FC = () => {
           </Button>
         )}
 
-        {/* Conversation Title */}
+        {/* Conversation / Project Title */}
         <div className="flex items-center gap-2 min-w-0">
-          {isEditingTitle ? (
+          {workspaceMode === 'project' ? (
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-semibold text-white truncate max-w-[200px] sm:max-w-xs md:max-w-md">
+                {activeProject ? activeProject.name : 'Research Workspace'}
+              </h2>
+              <span className="text-[10px] uppercase font-mono px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                Workspace
+              </span>
+            </div>
+          ) : isEditingTitle ? (
             <input
               type="text"
               value={titleInput}
@@ -165,7 +180,7 @@ export const Header: React.FC = () => {
             <h2
               onClick={handleStartRename}
               className={cn(
-                'text-sm font-medium text-moso-100 truncate cursor-pointer hover:text-white transition-colors max-w-[200px] sm:max-w-xs md:max-w-md',
+                'text-[14.5px] font-semibold text-white truncate cursor-pointer hover:text-emerald-400 transition-colors max-w-[200px] sm:max-w-xs md:max-w-md',
                 !activeConversation && 'text-moso-400 font-normal italic'
               )}
               title={activeConversation?.title || 'New Session'}
@@ -183,7 +198,7 @@ export const Header: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsModelDropdownOpen((prev) => !prev)}
-            className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-moso-800/80 hover:bg-moso-750 border border-moso-700/60 transition-all text-xs text-moso-200 hover:text-white cursor-pointer"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-moso-800/80 hover:bg-moso-750 border border-moso-700/60 transition-all text-[13px] text-moso-200 hover:text-white cursor-pointer"
           >
             <Cpu className="h-3.5 w-3.5 text-moso-accent" />
             <span className="font-semibold">{currentModelInfo?.name || selectedModel}</span>
@@ -297,6 +312,20 @@ export const Header: React.FC = () => {
         >
           <Settings className="h-4 w-4" />
         </Button>
+
+        {/* Lock / Sign Out Button for Protected Remote Sessions */}
+        {isAuthRequired && isAuthenticated && (
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={logoutSession}
+            aria-label="Lock Session"
+            title="Lock Session / Sign Out"
+            className="text-moso-300 hover:text-amber-400"
+          >
+            <Lock className="h-4 w-4" />
+          </Button>
+        )}
       </div>
     </header>
   );

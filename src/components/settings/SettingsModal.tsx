@@ -8,6 +8,7 @@ import {
   Info,
   RefreshCw,
   Trash2,
+  Lock,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Modal } from '../ui/Modal';
@@ -31,6 +32,9 @@ export const SettingsModal: React.FC = () => {
     isMockMode,
     toggleMockMode,
     clearAllHistory,
+    isAuthRequired,
+    isAuthenticated,
+    logoutSession,
   } = useApp();
 
   const [activeTab, setActiveTab] = useState<SettingsTab>('general');
@@ -388,6 +392,40 @@ export const SettingsModal: React.FC = () => {
                     ? 'Dev Mock Mode is active. Data is simulated and stored inside your browser localStorage.'
                     : 'Real Backend Mode is active. All user prompts and assistant completions are persistently saved to your local SQLite database.'}
                 </p>
+              </div>
+
+              {/* Public Port Forwarding & Remote Tester Protection */}
+              <div className="p-3.5 rounded-xl bg-moso-850/60 border border-moso-750 text-xs space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 font-medium text-white">
+                    <Lock className="h-3.5 w-3.5 text-moso-accent" />
+                    <span>Public Port Forwarding Protection</span>
+                  </div>
+                  <Badge variant={isAuthRequired ? 'success' : 'muted'} size="sm">
+                    {isAuthRequired ? 'Password Protected' : 'Open Access'}
+                  </Badge>
+                </div>
+                <p className="text-[11px] text-moso-400 leading-relaxed">
+                  {isAuthRequired
+                    ? 'MOSO_ACCESS_PASSWORD is active on the server. Remote testers must provide the password before accessing chat, document ingestion, or projects.'
+                    : 'No access password set on backend. To password-protect remote forwarded ports, set MOSO_ACCESS_PASSWORD in your .env file or environment.'}
+                </p>
+                {isAuthRequired && isAuthenticated && (
+                  <div className="pt-1">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={async () => {
+                        await logoutSession();
+                        closeSettings();
+                      }}
+                      className="gap-1.5 text-amber-400 hover:text-amber-300"
+                    >
+                      <Lock className="h-3.5 w-3.5" />
+                      <span>Lock Tester Session Now</span>
+                    </Button>
+                  </div>
+                )}
               </div>
 
               <div className="pt-2 border-t border-moso-800">

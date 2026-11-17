@@ -43,7 +43,8 @@ async def run_tests():
         print("\n[TEST 2] GET /api/v1/models")
         resp = await client.get("/api/v1/models")
         assert resp.status_code == 200, "Models check failed"
-        models = resp.json()
+        data = resp.json()
+        models = data.get("models", data) if isinstance(data, dict) else data
         print(f"Retrieved {len(models)} model(s): {[m['id'] for m in models]}")
         default_model = next((m for m in models if m.get("is_default")), None)
         assert default_model is not None, "A default model must be returned"

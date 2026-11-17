@@ -41,13 +41,21 @@
 /* Markdown styling inside assistant message */
 .prose-moso {
   color: #ebeef5;
-  font-size: 0.9375rem;
-  line-height: 1.68;
+  font-size: 0.96875rem;
+  line-height: 1.75;
+  letter-spacing: -0.005em;
+}
+
+@media (min-width: 640px) {
+  .prose-moso {
+    font-size: 1rem;
+    line-height: 1.78;
+  }
 }
 
 .prose-moso p {
-  margin-top: 0.65rem;
-  margin-bottom: 0.65rem;
+  margin-top: 0.85rem;
+  margin-bottom: 0.85rem;
 }
 
 .prose-moso p:first-child {
@@ -62,59 +70,109 @@
 .prose-moso h2,
 .prose-moso h3,
 .prose-moso h4 {
-  color: #f7f8fb;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+}
+
+.prose-moso h1 {
+  font-size: 1.5rem; /* ~24px */
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid rgba(39, 44, 61, 0.6);
+}
+
+.prose-moso h2 {
+  font-size: 1.28rem; /* ~20.5px */
   font-weight: 600;
-  letter-spacing: -0.015em;
+  margin-top: 1.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.prose-moso h3 {
+  font-size: 1.125rem; /* ~18px */
+  font-weight: 600;
+  color: #f7f8fb;
   margin-top: 1.25rem;
   margin-bottom: 0.5rem;
 }
 
-.prose-moso h1 { font-size: 1.35rem; }
-.prose-moso h2 { font-size: 1.15rem; }
-.prose-moso h3 { font-size: 1.025rem; }
-
 .prose-moso ul {
   list-style-type: disc;
-  padding-left: 1.25rem;
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
 .prose-moso ol {
   list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose-moso ul ul {
+  list-style-type: circle;
   padding-left: 1.25rem;
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-top: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+
+.prose-moso ul ul ul {
+  list-style-type: square;
+}
+
+.prose-moso ol ol {
+  list-style-type: lower-alpha;
+  padding-left: 1.25rem;
+  margin-top: 0.35rem;
+  margin-bottom: 0.35rem;
 }
 
 .prose-moso li {
-  margin-top: 0.25rem;
-  margin-bottom: 0.25rem;
+  margin-top: 0.35rem;
+  margin-bottom: 0.35rem;
+  line-height: 1.72;
 }
 
 .prose-moso code:not(pre code) {
   background-color: #171a24;
   color: #34d399;
-  padding: 0.15rem 0.4rem;
+  padding: 0.18rem 0.45rem;
   border-radius: 0.375rem;
   font-family: var(--font-mono);
-  font-size: 0.85em;
-  border: 1px solid #272c3d;
+  font-size: 0.875em;
+  font-weight: 500;
+  border: 1px solid rgba(39, 44, 61, 0.8);
 }
 
 .prose-moso blockquote {
   border-left: 3px solid #10b981;
-  padding-left: 0.875rem;
+  background: rgba(16, 185, 129, 0.05);
+  padding: 0.7rem 1.1rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
   margin-left: 0;
   margin-right: 0;
-  color: #a5adc4;
+  color: #cfd4e3;
   font-style: italic;
+}
+
+.prose-moso hr {
+  border: 0;
+  border-top: 1px solid #272c3d;
+  margin: 1.75rem 0;
 }
 
 .prose-moso a {
   color: #34d399;
   text-decoration: underline;
   text-underline-offset: 3px;
+  font-weight: 500;
+  transition: color 0.15s ease;
 }
 
 .prose-moso a:hover {
@@ -124,25 +182,30 @@
 .prose-moso table {
   width: 100%;
   border-collapse: collapse;
-  margin: 1rem 0;
+  margin: 1.25rem 0;
   font-size: 0.875rem;
 }
 
 .prose-moso th,
 .prose-moso td {
   border: 1px solid #272c3d;
-  padding: 0.5rem 0.75rem;
+  padding: 0.55rem 0.85rem;
   text-align: left;
 }
 
 .prose-moso th {
   background-color: #171a24;
-  color: #f7f8fb;
+  color: #ffffff;
   font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .prose-moso tr:nth-child(even) {
-  background-color: rgba(23, 26, 36, 0.4);
+  background-color: rgba(23, 26, 36, 0.45);
+}
+
+.prose-moso tr:hover {
+  background-color: rgba(30, 34, 48, 0.4);
 }
 
 /* Pulsing typing cursor */

@@ -93,7 +93,7 @@ export const ChatArea: React.FC = () => {
       {/* Active Attached Documents Banner */}
       {documents.length > 0 && (
         <div className="border-b border-moso-800/60 bg-moso-900/60 backdrop-blur-sm px-4 py-2 sm:px-6 md:px-8 z-10 shrink-0">
-          <div className="max-w-3xl mx-auto flex items-center justify-between text-xs gap-3">
+          <div className="max-w-[880px] lg:max-w-[920px] mx-auto flex items-center justify-between text-xs gap-3">
             <div className="flex items-center gap-2 text-moso-300 font-medium shrink-0">
               <FileText className="h-3.5 w-3.5 text-moso-accent" />
               <span>Active Document Context ({documents.length}):</span>
@@ -137,7 +137,7 @@ export const ChatArea: React.FC = () => {
         {messages.length === 0 ? (
           <WelcomeScreen onSelectPrompt={(prompt) => sendMessage(prompt)} />
         ) : (
-          <div className="max-w-3xl mx-auto space-y-4">
+          <div className="max-w-[880px] lg:max-w-[920px] mx-auto space-y-4">
             {messages.map((message, index) => {
               const isLatest = index === messages.length - 1;
               return (

@@ -111,7 +111,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 pb-4 pt-1 select-none">
+    <div className="w-full max-w-[880px] lg:max-w-[920px] mx-auto px-4 pb-4 pt-1 select-none">
       {/* Upload Error Banner */}
       {uploadError && (
         <div className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300 mb-2 shadow-sm animate-fade-in">
@@ -161,13 +161,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         )}
 
         {/* Top bar inside input: Active Model Pill */}
-        <div className="flex items-center justify-between px-3.5 pt-2.5 pb-1 text-xs">
+        <div className="flex items-center justify-between px-4 pt-2.5 pb-1 text-xs">
           <div className="flex items-center gap-1.5 text-moso-400">
             <Cpu className="h-3.5 w-3.5 text-moso-accent" />
             <span className="font-medium text-moso-300">
               {currentModel?.name || selectedModel}
             </span>
-            <span className="text-[10px] text-moso-500 font-mono">
+            <span className="text-[11px] text-moso-500 font-mono">
               ({currentModel?.size || 'Local'})
             </span>
           </div>
@@ -179,23 +179,23 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
         {/* Attached Documents and Upload Progress List */}
         {(documents.length > 0 || isUploadingDocument) && (
-          <div className="px-3.5 pt-1.5 pb-1 flex flex-wrap gap-2 items-center">
+          <div className="px-4 pt-1.5 pb-1 flex flex-wrap gap-2 items-center">
             {documents.map((doc) => (
               <div
                 key={doc.id}
-                className="group flex items-center gap-2 pl-2 pr-1.5 py-1 rounded-lg bg-moso-800/90 border border-moso-700/80 text-xs text-moso-200 hover:border-moso-600 transition-colors max-w-full"
+                className="group flex items-center gap-2 pl-2.5 pr-2 py-1 rounded-lg bg-moso-800/90 border border-moso-700/80 text-xs text-moso-200 hover:border-moso-600 transition-colors max-w-full"
               >
                 <div className="flex items-center gap-1.5 min-w-0">
-                  <span className="px-1 py-0.2 text-[9px] font-bold tracking-wider rounded bg-rose-500/20 text-rose-400 border border-rose-500/30">
+                  <span className="px-1.5 py-0.2 text-[9px] font-bold tracking-wider rounded bg-rose-500/20 text-rose-400 border border-rose-500/30">
                     PDF
                   </span>
                   <span
-                    className="font-medium text-moso-200 truncate max-w-[160px] sm:max-w-[240px]"
+                    className="font-medium text-moso-200 truncate max-w-[160px] sm:max-w-[260px]"
                     title={doc.filename}
                   >
                     {doc.filename}
                   </span>
-                  <span className="text-[10px] text-moso-400 shrink-0">
+                  <span className="text-[11px] text-moso-400 shrink-0">
                     ({doc.page_count} {doc.page_count === 1 ? 'page' : 'pages'} • {formatFileSize(doc.file_size)})
                   </span>
                 </div>
@@ -206,13 +206,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                   title="Remove document"
                   aria-label={`Remove ${doc.filename}`}
                 >
-                  <X className="h-3 w-3" />
+                  <X className="h-3.5 w-3.5" />
                 </button>
               </div>
             ))}
 
             {isUploadingDocument && (
-              <div className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-moso-850 border border-moso-accent/40 text-xs text-moso-accent animate-pulse">
+              <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-moso-850 border border-moso-accent/40 text-xs text-moso-accent animate-pulse">
                 <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" />
                 <span className="text-[11px] font-medium">Extracting & indexing PDF text...</span>
               </div>
@@ -221,7 +221,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         )}
 
         {/* Text Area */}
-        <div className="px-3.5 py-1">
+        <div className="px-4 py-1.5">
           <textarea
             ref={textareaRef}
             rows={1}
@@ -233,12 +233,12 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                 ? "Ask a question about the attached PDF document(s)..."
                 : "Ask Moso AI anything..."
             }
-            className="w-full bg-transparent text-white text-sm placeholder:text-moso-500 resize-none focus:outline-none max-h-48 leading-relaxed font-normal"
+            className="w-full bg-transparent text-white text-[15px] placeholder:text-moso-500 resize-none focus:outline-none min-h-[52px] max-h-48 leading-relaxed font-normal"
           />
         </div>
 
         {/* Bottom Actions Bar */}
-        <div className="flex items-center justify-between px-3 pb-2.5 pt-1">
+        <div className="flex items-center justify-between px-3.5 pb-2.5 pt-1">
           {/* Left Actions: Attachment Button */}
           <div className="relative flex items-center gap-1">
             <button
@@ -246,7 +246,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
               disabled={isUploadingDocument}
               onClick={() => fileInputRef.current?.click()}
               className={cn(
-                'p-1.5 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 text-xs',
+                'p-2 rounded-lg transition-colors cursor-pointer flex items-center gap-2 text-xs',
                 isUploadingDocument
                   ? 'text-moso-500 cursor-not-allowed'
                   : documents.length > 0
@@ -261,7 +261,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
               ) : (
                 <Paperclip className="h-4 w-4" />
               )}
-              <span className="hidden sm:inline text-[11px] text-moso-400">
+              <span className="hidden sm:inline text-[12px] text-moso-400">
                 {documents.length > 0 ? `${documents.length} PDF attached` : 'Attach PDF'}
               </span>
             </button>
@@ -274,7 +274,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                 variant="danger"
                 size="sm"
                 onClick={onStopGeneration}
-                className="rounded-lg gap-1.5 px-3 py-1.5 font-medium"
+                className="rounded-xl gap-1.5 px-3.5 py-2 font-medium"
               >
                 <Square className="h-3 w-3 fill-current" />
                 <span>Stop</span>
@@ -285,14 +285,14 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                 disabled={!input.trim()}
                 onClick={handleSend}
                 className={cn(
-                  'h-8 w-8 rounded-lg flex items-center justify-center transition-all duration-150',
+                  'h-8.5 w-8.5 rounded-xl flex items-center justify-center transition-all duration-150',
                   input.trim()
                     ? 'bg-moso-accent text-moso-950 hover:bg-moso-accent-hover shadow-sm cursor-pointer'
                     : 'bg-moso-800 text-moso-500 cursor-not-allowed'
                 )}
                 aria-label="Send message"
               >
-                <ArrowUp className="h-4 w-4 stroke-[2.5]" />
+                <ArrowUp className="h-4.5 w-4.5 stroke-[2.5]" />
               </button>
             )}
           </div>
@@ -300,7 +300,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       </div>
 
       {/* Zero Telemetry Subline */}
-      <div className="mt-2 text-center text-[10px] text-moso-500 flex items-center justify-center gap-1.5 select-none">
+      <div className="mt-2.5 text-center text-[11px] text-moso-500 flex items-center justify-center gap-1.5 select-none">
         <span
           className={cn(
             'h-1.5 w-1.5 rounded-full',

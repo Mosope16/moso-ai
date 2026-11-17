@@ -68,7 +68,7 @@ export const WelcomeScreen: React.FC<{ onSelectPrompt: (prompt: string) => void 
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-3xl mx-auto select-none animate-fade-in">
+    <div className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-[880px] lg:max-w-[920px] mx-auto select-none animate-fade-in">
       {/* Brand Emblem */}
       <div className="mb-6 relative group">
         <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-moso-accent to-cyan-500 opacity-20 blur-md group-hover:opacity-30 transition duration-300" />
