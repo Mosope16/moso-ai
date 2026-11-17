@@ -68,54 +68,54 @@ export const WelcomeScreen: React.FC<{ onSelectPrompt: (prompt: string) => void 
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-[880px] lg:max-w-[920px] mx-auto select-none animate-fade-in">
+    <div className="flex-1 flex flex-col items-center justify-center px-3 py-4 sm:p-6 text-center w-full max-w-[880px] lg:max-w-[920px] mx-auto select-none animate-fade-in my-auto">
       {/* Brand Emblem */}
-      <div className="mb-6 relative group">
+      <div className="mb-3 sm:mb-6 relative group">
         <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-moso-accent to-cyan-500 opacity-20 blur-md group-hover:opacity-30 transition duration-300" />
-        <div className="relative h-16 w-16 rounded-2xl bg-moso-900 border border-moso-750 flex items-center justify-center p-3 shadow-xl">
-          <img src="/logo.svg" alt="Moso AI Logo" className="h-10 w-10" />
+        <div className="relative h-12 w-12 sm:h-16 sm:w-16 rounded-2xl bg-moso-900 border border-moso-750 flex items-center justify-center p-2.5 sm:p-3 shadow-xl">
+          <img src="/logo.svg" alt="Moso AI Logo" className="h-7 w-7 sm:h-10 sm:w-10" />
         </div>
       </div>
 
       {/* Greeting & Headline */}
-      <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white mb-2">
+      <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight text-white mb-1.5 sm:mb-2">
         {getGreeting()}, {settings.general.username || 'there'}.
       </h1>
-      <p className="text-sm text-moso-400 max-w-md mb-8 leading-relaxed">
+      <p className="text-xs sm:text-sm text-moso-400 max-w-sm sm:max-w-md mb-3 sm:mb-6 leading-relaxed">
         Your private, local-first AI assistant. All conversations remain encrypted and stored locally on your device.
       </p>
 
       {/* Model Status Pill */}
-      <div className="mb-8 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-moso-900 border border-moso-800 text-xs text-moso-300">
-        <span className="h-2 w-2 rounded-full bg-moso-accent" />
+      <div className="mb-4 sm:mb-6 inline-flex items-center gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-moso-900 border border-moso-800 text-[11px] sm:text-xs text-moso-300">
+        <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-moso-accent" />
         <span>Ready with model</span>
         <span className="font-mono font-semibold text-white">{selectedModel}</span>
       </div>
 
       {/* Suggested Prompt Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full text-left">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 w-full text-left">
         {SUGGESTED_PROMPTS.map((item) => (
           <div
             key={item.id}
             onClick={() => onSelectPrompt(item.prompt)}
-            className="group relative p-4 rounded-xl bg-moso-900/60 hover:bg-moso-850 border border-moso-800/80 hover:border-moso-700/80 transition-all duration-200 cursor-pointer shadow-xs flex flex-col justify-between"
+            className="group relative p-3 sm:p-4 rounded-xl bg-moso-900/60 hover:bg-moso-850 active:bg-moso-800 border border-moso-800/80 hover:border-moso-700/80 transition-all duration-200 cursor-pointer shadow-xs flex flex-col justify-between"
           >
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+                <div className="flex items-center gap-1.5 sm:gap-2">
                   <div className="p-1 rounded-md bg-moso-800 border border-moso-700/60">
                     {getIcon(item.icon)}
                   </div>
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-moso-400">
+                  <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-moso-400">
                     {item.category}
                   </span>
                 </div>
                 <ArrowUpRight className="h-3.5 w-3.5 text-moso-500 group-hover:text-moso-accent transition-colors" />
               </div>
-              <h3 className="text-sm font-medium text-white mb-1 group-hover:text-moso-accent transition-colors">
+              <h3 className="text-[13px] sm:text-sm font-medium text-white mb-0.5 sm:mb-1 group-hover:text-moso-accent transition-colors">
                 {item.title}
               </h3>
-              <p className="text-xs text-moso-400 line-clamp-2 leading-relaxed">
+              <p className="text-[11px] sm:text-xs text-moso-400 line-clamp-2 leading-relaxed">
                 {item.prompt}
               </p>
             </div>

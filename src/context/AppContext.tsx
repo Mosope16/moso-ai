@@ -190,7 +190,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [availableModels, setAvailableModels] = useState<ModelInfo[]>(MOCK_MODELS);
   const [connectionState, setConnectionState] = useState<ConnectionState>('connecting');
   const [healthInfo, setHealthInfo] = useState<HealthResponse | null>(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 768;
+    }
+    return false;
+  });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [errorNotification, setErrorNotification] = useState<string | null>(null);
@@ -207,6 +212,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setIsAuthRequired(true);
       setIsAuthenticated(false);
     });
+  }, []);
+
+  // Handle responsive viewport transitions between mobile (< 768px) and desktop (>= 768px)
+  useEffect(() => {
+    let lastWidth = typeof window !== 'undefined' ? window.innerWidth : 1024;
+    const handleResize = () => {
+      const currentWidth = window.innerWidth;
+      if (lastWidth >= 768 && currentWidth < 768) {
+        // Transitioning from desktop to mobile: ensure drawer starts closed
+        setIsSidebarOpen(false);
+      } else if (lastWidth < 768 && currentWidth >= 768) {
+        // Transitioning from mobile to desktop: restore sidebar in normal layout
+        setIsSidebarOpen(true);
+      }
+      lastWidth = currentWidth;
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Active conversation object
@@ -355,6 +378,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
     setActiveConversationId(id);
     setUploadError(null);
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
     try {
       const service = isMockMode ? mockService : api;
       const conv = await service.getConversation(id);
@@ -377,6 +403,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setMessages([]);
     setDocuments([]);
     setUploadError(null);
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
   };
 
   // Upload and attach PDF document to conversation or project
@@ -508,6 +537,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setActiveConversationId(null);
     setMessages([]);
     setDocuments([]);
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
     if (id) {
       setWorkspaceMode('project');
       await loadProjectDetails(id);

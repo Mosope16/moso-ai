@@ -87,23 +87,23 @@ export const SettingsModal: React.FC = () => {
       isOpen={isSettingsOpen}
       onClose={closeSettings}
       maxWidth="2xl"
-      className="h-[620px]"
+      className="h-[92dvh] sm:h-[620px]"
       title={
         <div className="flex items-center gap-2">
           <SettingsIcon className="h-5 w-5 text-moso-accent" />
-          <span className="text-lg font-semibold text-white">Settings</span>
+          <span className="text-base sm:text-lg font-semibold text-white">Settings</span>
         </div>
       }
     >
-      <div className="flex h-full gap-6">
-        {/* Sidebar Tabs */}
-        <div className="w-48 shrink-0 flex flex-col space-y-1 border-r border-moso-800/80 pr-4">
+      <div className="flex flex-col md:flex-row h-full gap-3 md:gap-6 min-w-0">
+        {/* Navigation Tabs: Horizontal Scrollable Bar on Mobile, Vertical Sidebar on Desktop */}
+        <div className="flex md:flex-col overflow-x-auto md:overflow-visible shrink-0 pb-2 md:pb-0 gap-1 border-b md:border-b-0 md:border-r border-moso-800/80 md:w-48 md:pr-4 scrollbar-none">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
               className={cn(
-                'flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors text-left cursor-pointer',
+                'flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-colors text-left cursor-pointer shrink-0 whitespace-nowrap',
                 activeTab === item.id
                   ? 'bg-moso-800 text-white font-semibold'
                   : 'text-moso-400 hover:text-white hover:bg-moso-850'
@@ -114,15 +114,15 @@ export const SettingsModal: React.FC = () => {
             </button>
           ))}
 
-          {/* Dev Mock Switch shortcut in settings */}
-          <div className="pt-6 mt-auto border-t border-moso-800/80">
+          {/* Dev Mock Switch shortcut in desktop settings */}
+          <div className="hidden md:block pt-6 mt-auto border-t border-moso-800/80">
             <div className="p-2.5 rounded-lg bg-moso-950/80 border border-moso-800 text-[11px]">
               <span className="font-semibold text-moso-300 block mb-1">Backend Mode</span>
               <button
                 type="button"
                 onClick={toggleMockMode}
                 className={cn(
-                  'w-full py-1 px-2 rounded text-[10px] font-mono font-medium border text-center transition-colors',
+                  'w-full py-1 px-2 rounded text-[10px] font-mono font-medium border text-center transition-colors cursor-pointer',
                   isMockMode
                     ? 'bg-cyan-500/15 border-cyan-500/30 text-cyan-300'
                     : 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
@@ -135,7 +135,7 @@ export const SettingsModal: React.FC = () => {
         </div>
 
         {/* Tab Content Panes */}
-        <div className="flex-1 overflow-y-auto pr-2 space-y-6 text-xs text-moso-300">
+        <div className="flex-1 overflow-y-auto pr-1 md:pr-2 space-y-5 text-xs text-moso-300 min-w-0">
           {/* GENERAL TAB */}
           {activeTab === 'general' && (
             <div className="space-y-4">

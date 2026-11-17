@@ -30,6 +30,7 @@ export const Sidebar: React.FC = () => {
     renameConversation,
     isSidebarOpen,
     toggleSidebar,
+    setSidebarOpen,
     openSettings,
     selectedModel,
     availableModels,
@@ -114,17 +115,55 @@ export const Sidebar: React.FC = () => {
 
   const dateGroups: DateGroup[] = ['Today', 'Yesterday', 'Previous 7 Days', 'Previous 30 Days', 'Older'];
 
+  // Mobile drawer: Lock body scroll & Escape key handler
+  React.useEffect(() => {
+    if (!isSidebarOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && window.innerWidth < 768) {
+        setSidebarOpen(false);
+      }
+    };
+
+    if (window.innerWidth < 768) {
+      document.body.style.overflow = 'hidden';
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isSidebarOpen, setSidebarOpen]);
+
   if (!isSidebarOpen) {
     return null;
   }
 
   return (
     <>
-      <aside className="w-72 sm:w-64 md:w-72 bg-moso-900 border-r border-moso-800/80 flex flex-col h-full select-none shrink-0 transition-all duration-200 z-30">
+      {/* Mobile Navigation Drawer Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/65 backdrop-blur-xs z-40 md:hidden transition-opacity duration-200"
+        onClick={() => setSidebarOpen(false)}
+        aria-hidden="true"
+      />
+
+      {/* Sidebar (Desktop) / Sliding Overlay Drawer (Mobile) */}
+      <aside
+        className={cn(
+          'bg-moso-900 border-r border-moso-800/80 flex flex-col h-full select-none shrink-0 transition-all duration-200',
+          'fixed inset-y-0 left-0 z-50 w-[85vw] max-w-[320px] shadow-2xl animate-slide-right',
+          'md:relative md:inset-auto md:w-72 md:shadow-none md:animate-none md:z-30'
+        )}
+      >
         {/* Brand & Collapse Header */}
         <div className="p-3.5 border-b border-moso-800/60 flex items-center justify-between">
           <div
-            onClick={() => createNewConversation()}
+            onClick={() => {
+              createNewConversation();
+              if (window.innerWidth < 768) setSidebarOpen(false);
+            }}
             className="flex items-center gap-2.5 cursor-pointer group hover:opacity-90 transition-opacity"
             title="Start new conversation"
           >
@@ -144,10 +183,11 @@ export const Sidebar: React.FC = () => {
             variant="ghost"
             size="icon-sm"
             onClick={toggleSidebar}
-            aria-label="Collapse sidebar"
+            aria-label="Close sidebar"
             className="text-moso-400 hover:text-white"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <X className="h-4 w-4 md:hidden" />
+            <ChevronLeft className="hidden md:block h-4 w-4" />
           </Button>
         </div>
 
@@ -452,7 +492,10 @@ export const Sidebar: React.FC = () => {
           {/* Settings Trigger */}
           <button
             type="button"
-            onClick={openSettings}
+            onClick={() => {
+              openSettings();
+              if (window.innerWidth < 768) setSidebarOpen(false);
+            }}
             className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs text-moso-400 hover:text-white hover:bg-moso-850 transition-colors cursor-pointer"
           >
             <span className="flex items-center gap-2">

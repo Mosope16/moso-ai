@@ -42,14 +42,16 @@
 .prose-moso {
   color: #ebeef5;
   font-size: 0.96875rem;
-  line-height: 1.75;
+  line-height: 1.65;
   letter-spacing: -0.005em;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   .prose-moso {
     font-size: 1rem;
-    line-height: 1.78;
+    line-height: 1.75;
   }
 }
 
@@ -257,4 +259,17 @@
 button, input, textarea, a, select, [data-tauri-no-drag] {
   app-region: no-drag;
   -webkit-app-region: no-drag;
+}
+
+/* Mobile drawer and touch utilities */
+.safe-area-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

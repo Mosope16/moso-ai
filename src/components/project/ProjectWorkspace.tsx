@@ -167,8 +167,8 @@ export const ProjectWorkspace: React.FC = () => {
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden bg-moso-950 relative">
       {/* Workspace Header Banner */}
-      <div className="border-b border-moso-800/80 bg-moso-900/80 backdrop-blur-md px-5 py-3.5 z-10 shrink-0">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="border-b border-moso-800/80 bg-moso-900/80 backdrop-blur-md px-3 sm:px-5 py-3 sm:py-3.5 z-10 shrink-0">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <button
               type="button"
@@ -280,12 +280,12 @@ export const ProjectWorkspace: React.FC = () => {
         </div>
 
         {/* Tab Navigation Row */}
-        <div className="max-w-6xl mx-auto flex items-center gap-1 mt-3.5 border-t border-moso-800/60 pt-2 overflow-x-auto scrollbar-none">
+        <div className="max-w-6xl mx-auto flex items-center gap-1 mt-2.5 sm:mt-3.5 border-t border-moso-800/60 pt-2 overflow-x-auto scrollbar-none shrink-0">
           <button
             type="button"
             onClick={() => setActiveTab('chat')}
             className={cn(
-              'flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer',
+              'flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer shrink-0 whitespace-nowrap',
               activeTab === 'chat'
                 ? 'bg-moso-800 text-white shadow-xs border border-moso-700/80'
                 : 'text-moso-400 hover:text-moso-200 hover:bg-moso-850'
@@ -299,56 +299,56 @@ export const ProjectWorkspace: React.FC = () => {
             type="button"
             onClick={() => setActiveTab('papers')}
             className={cn(
-              'flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer',
+              'flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer shrink-0 whitespace-nowrap',
               activeTab === 'papers'
                 ? 'bg-moso-800 text-white shadow-xs border border-moso-700/80'
                 : 'text-moso-400 hover:text-moso-200 hover:bg-moso-850'
             )}
           >
             <FileText className="h-3.5 w-3.5 text-rose-400" />
-            <span>Papers & Documents ({projectDocuments.length})</span>
+            <span>Papers ({projectDocuments.length})</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('notes')}
             className={cn(
-              'flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer',
+              'flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer shrink-0 whitespace-nowrap',
               activeTab === 'notes'
                 ? 'bg-moso-800 text-white shadow-xs border border-moso-700/80'
                 : 'text-moso-400 hover:text-moso-200 hover:bg-moso-850'
             )}
           >
             <Bookmark className="h-3.5 w-3.5 text-amber-400" />
-            <span>Notes & Findings ({projectNotes.length})</span>
+            <span>Notes ({projectNotes.length})</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('instructions')}
             className={cn(
-              'flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer',
+              'flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer shrink-0 whitespace-nowrap',
               activeTab === 'instructions'
                 ? 'bg-moso-800 text-white shadow-xs border border-moso-700/80'
                 : 'text-moso-400 hover:text-moso-200 hover:bg-moso-850'
             )}
           >
             <Compass className="h-3.5 w-3.5 text-cyan-400" />
-            <span>Domain Instructions</span>
+            <span>Instructions</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('activity')}
             className={cn(
-              'flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer',
+              'flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer shrink-0 whitespace-nowrap',
               activeTab === 'activity'
                 ? 'bg-moso-800 text-white shadow-xs border border-moso-700/80'
                 : 'text-moso-400 hover:text-moso-200 hover:bg-moso-850'
             )}
           >
             <History className="h-3.5 w-3.5 text-purple-400" />
-            <span>Activity Timeline</span>
+            <span>Activity</span>
           </button>
         </div>
       </div>

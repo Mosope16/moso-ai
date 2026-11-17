@@ -47,7 +47,7 @@ export const Modal: React.FC<ModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 md:p-6 animate-fade-in">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/75 backdrop-blur-sm transition-opacity"
@@ -58,7 +58,7 @@ export const Modal: React.FC<ModalProps> = ({
       {/* Dialog box */}
       <div
         className={cn(
-          'relative w-full bg-moso-900 border border-moso-700/80 rounded-2xl shadow-2xl overflow-hidden z-10 flex flex-col max-h-[90vh]',
+          'relative w-full bg-moso-900 border border-moso-700/80 rounded-2xl shadow-2xl overflow-hidden z-10 flex flex-col max-h-[95dvh] sm:max-h-[90vh]',
           maxWidths[maxWidth],
           className
         )}
@@ -67,10 +67,10 @@ export const Modal: React.FC<ModalProps> = ({
       >
         {/* Header */}
         {(title || description) && (
-          <div className="flex items-start justify-between p-5 border-b border-moso-800/80 bg-moso-900/60 backdrop-blur-xs">
+          <div className="flex items-start justify-between p-4 sm:p-5 border-b border-moso-800/80 bg-moso-900/60 backdrop-blur-xs shrink-0">
             <div>
               {typeof title === 'string' ? (
-                <h3 className="text-lg font-semibold text-white tracking-tight">{title}</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-white tracking-tight">{title}</h3>
               ) : (
                 title
               )}
@@ -82,8 +82,8 @@ export const Modal: React.FC<ModalProps> = ({
               variant="ghost"
               size="icon-sm"
               onClick={onClose}
-              className="text-moso-400 hover:text-white rounded-lg"
               aria-label="Close dialog"
+              className="text-moso-400 hover:text-white rounded-lg -mr-1 -mt-1 sm:mr-0 sm:mt-0"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -91,7 +91,7 @@ export const Modal: React.FC<ModalProps> = ({
         )}
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-5">{children}</div>
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5">{children}</div>
       </div>
     </div>
   );

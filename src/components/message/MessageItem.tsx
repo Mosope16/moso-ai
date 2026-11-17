@@ -39,15 +39,15 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   return (
     <div
       className={cn(
-        'group flex gap-4 py-4 px-3 sm:px-4 rounded-xl transition-colors duration-150',
+        'group flex gap-2.5 sm:gap-4 py-3 sm:py-4 px-2 sm:px-4 rounded-xl transition-colors duration-150',
         isUser ? 'bg-moso-900/40 justify-end' : 'bg-transparent justify-start'
       )}
     >
       {/* Assistant Avatar (Left) */}
       {!isUser && (
         <div className="shrink-0 pt-0.5 select-none">
-          <div className="h-8 w-8 rounded-lg bg-moso-850 border border-moso-700/80 flex items-center justify-center p-1.5 shadow-xs">
-            <img src="/logo.svg" alt="Moso AI" className="h-5 w-5" />
+          <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-moso-850 border border-moso-700/80 flex items-center justify-center p-1 sm:p-1.5 shadow-xs">
+            <img src="/logo.svg" alt="Moso AI" className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
           </div>
         </div>
       )}
@@ -55,29 +55,29 @@ export const MessageItem: React.FC<MessageItemProps> = ({
       {/* Message Content Container */}
       <div className={cn('flex flex-col min-w-0 max-w-full', isUser ? 'items-end' : 'items-start flex-1')}>
         {/* Author & Timestamp */}
-        <div className="flex items-center gap-2 mb-2 text-[12px] text-moso-400 select-none">
+        <div className="flex items-center gap-2 mb-1.5 sm:mb-2 text-[11px] sm:text-[12px] text-moso-400 select-none">
           <span className="font-semibold text-moso-200">
             {isUser ? 'You' : 'Moso AI'}
           </span>
           {message.model && !isUser && (
-            <span className="text-[11px] text-moso-500 font-mono">
+            <span className="text-[10px] sm:text-[11px] text-moso-500 font-mono">
               ({message.model})
             </span>
           )}
           {showTimestamp && formattedTime && (
-            <span className="text-moso-500 text-[11px]">{formattedTime}</span>
+            <span className="text-moso-500 text-[10px] sm:text-[11px]">{formattedTime}</span>
           )}
         </div>
 
         {/* Message Body */}
         {isUser ? (
-          <div className="bg-moso-800/90 text-moso-100 rounded-2xl rounded-tr-xs px-5 py-3.5 text-[15px] leading-relaxed max-w-2xl border border-moso-700/60 shadow-xs selection:bg-moso-accent/25">
+          <div className="bg-moso-800/90 text-moso-100 rounded-2xl rounded-tr-xs px-4 py-2.5 sm:px-5 sm:py-3.5 text-[15px] sm:text-[15.5px] leading-relaxed max-w-[92%] sm:max-w-2xl border border-moso-700/60 shadow-xs selection:bg-moso-accent/25">
             <div className="whitespace-pre-wrap break-words">
               <InlineText text={message.content} />
             </div>
           </div>
         ) : (
-          <div className="w-full text-moso-100 text-[15px] sm:text-[16px] leading-[1.75] max-w-full">
+          <div className="w-full text-moso-100 text-[15px] sm:text-[16px] leading-[1.65] max-w-full min-w-0 break-words">
             {message.error ? (
               <div className="flex items-start gap-2.5 p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs">
                 <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5 text-rose-400" />
@@ -181,7 +181,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
         {/* Assistant Actions Toolbar (Copy & Regenerate) */}
         {!isUser && !message.is_streaming && message.content && (
-          <div className="flex items-center gap-1.5 mt-3 opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity select-none">
+          <div className="flex items-center gap-1.5 mt-2.5 sm:mt-3 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity select-none">
             <button
               type="button"
               onClick={handleCopy}

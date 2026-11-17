@@ -92,22 +92,23 @@ export const ChatArea: React.FC = () => {
 
       {/* Active Attached Documents Banner */}
       {documents.length > 0 && (
-        <div className="border-b border-moso-800/60 bg-moso-900/60 backdrop-blur-sm px-4 py-2 sm:px-6 md:px-8 z-10 shrink-0">
-          <div className="max-w-[880px] lg:max-w-[920px] mx-auto flex items-center justify-between text-xs gap-3">
-            <div className="flex items-center gap-2 text-moso-300 font-medium shrink-0">
+        <div className="border-b border-moso-800/60 bg-moso-900/60 backdrop-blur-sm px-3 py-2 sm:px-6 md:px-8 z-10 shrink-0">
+          <div className="w-full max-w-[880px] lg:max-w-[920px] mx-auto flex items-center justify-between text-xs gap-2 sm:gap-3">
+            <div className="flex items-center gap-1.5 sm:gap-2 text-moso-300 font-medium shrink-0">
               <FileText className="h-3.5 w-3.5 text-moso-accent" />
-              <span>Active Document Context ({documents.length}):</span>
+              <span className="hidden sm:inline">Active Document Context ({documents.length}):</span>
+              <span className="sm:hidden text-[11px]">Docs ({documents.length}):</span>
             </div>
-            <div className="flex items-center gap-2 overflow-x-auto py-0.5 scrollbar-thin">
+            <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto py-0.5 scrollbar-thin">
               {documents.map((doc) => (
                 <div
                   key={doc.id}
-                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-moso-850 border border-moso-750 text-[11px] text-moso-300 hover:border-moso-650 transition-colors shrink-0"
+                  className="flex items-center gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-moso-850 border border-moso-750 text-[11px] text-moso-300 hover:border-moso-650 transition-colors shrink-0"
                 >
                   <span className="font-semibold text-rose-400 text-[9px] px-1 py-0.2 rounded bg-rose-500/10 border border-rose-500/20">
                     PDF
                   </span>
-                  <span className="font-medium text-white truncate max-w-[140px] sm:max-w-[200px]" title={doc.filename}>
+                  <span className="font-medium text-white truncate max-w-[120px] sm:max-w-[200px]" title={doc.filename}>
                     {doc.filename}
                   </span>
                   <span className="text-moso-500 text-[10px]">
@@ -116,7 +117,7 @@ export const ChatArea: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => removeDocument(doc.id)}
-                    className="p-0.5 text-moso-400 hover:text-white rounded hover:bg-moso-700 transition-colors ml-0.5"
+                    className="p-0.5 text-moso-400 hover:text-white rounded hover:bg-moso-700 transition-colors ml-0.5 cursor-pointer"
                     title={`Remove ${doc.filename}`}
                   >
                     <X className="h-3 w-3" />
@@ -132,12 +133,12 @@ export const ChatArea: React.FC = () => {
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 md:px-8 space-y-2"
+        className="flex-1 overflow-y-auto px-3 sm:px-6 md:px-8 py-3 sm:py-4 space-y-2"
       >
         {messages.length === 0 ? (
           <WelcomeScreen onSelectPrompt={(prompt) => sendMessage(prompt)} />
         ) : (
-          <div className="max-w-[880px] lg:max-w-[920px] mx-auto space-y-4">
+          <div className="w-full max-w-[880px] lg:max-w-[920px] mx-auto space-y-3 sm:space-y-4">
             {messages.map((message, index) => {
               const isLatest = index === messages.length - 1;
               return (
@@ -157,7 +158,7 @@ export const ChatArea: React.FC = () => {
 
       {/* Floating Scroll-to-Bottom Button */}
       {showScrollButton && (
-        <div className="absolute bottom-24 right-8 z-20 animate-fade-in">
+        <div className="absolute bottom-20 sm:bottom-24 right-4 sm:right-8 z-20 animate-fade-in">
           <Button
             variant="secondary"
             size="icon-sm"

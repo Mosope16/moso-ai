@@ -45,12 +45,12 @@ const AppContent: React.FC = () => {
   }, [createNewConversation, toggleSidebar, openSettings]);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-moso-950 text-moso-100 select-none">
-      {/* Collapsible Sidebar */}
+    <div className="flex h-dvh h-screen w-full overflow-hidden bg-moso-950 text-moso-100 select-none relative">
+      {/* Collapsible Sidebar (Desktop) / Sliding Overlay Drawer (Mobile) */}
       <Sidebar />
 
       {/* Main View Area */}
-      <main className="flex-1 flex flex-col h-full min-w-0 overflow-hidden relative">
+      <main className="flex-1 flex flex-col h-full w-full min-w-0 overflow-hidden relative">
         {/* Top Header */}
         <Header />
 
