@@ -1,5 +1,22 @@
 import React, { useState } from 'react';
-import { Copy, Check, RotateCcw, AlertTriangle, User, BookOpen, ChevronDown, ChevronUp, FileText, Quote, X } from 'lucide-react';
+import {
+  Copy,
+  Check,
+  RotateCcw,
+  AlertTriangle,
+  User,
+  BookOpen,
+  ChevronDown,
+  ChevronUp,
+  FileText,
+  Quote,
+  X,
+  ShieldCheck,
+  ShieldAlert,
+  ShieldQuestion,
+  CheckCircle2,
+  AlertCircle,
+} from 'lucide-react';
 import { Message, Citation } from '../../types';
 import { formatMessageTime } from '../../utils/date';
 import { MarkdownRenderer, InlineText } from './MarkdownRenderer';
@@ -20,6 +37,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
   const [sourcesOpen, setSourcesOpen] = useState(false);
+  const [verificationOpen, setVerificationOpen] = useState(false);
   const [inspectingCitation, setInspectingCitation] = useState<Citation | null>(null);
   const isUser = message.role === 'user';
 
@@ -66,6 +84,43 @@ export const MessageItem: React.FC<MessageItemProps> = ({
           )}
           {showTimestamp && formattedTime && (
             <span className="text-moso-500 text-[10px] sm:text-[11px]">{formattedTime}</span>
+          )}
+
+          {/* Subtle Verification Indicator Badge if factual */}
+          {!isUser && message.verification && message.verification.is_factual && (
+            <button
+              type="button"
+              onClick={() => setVerificationOpen(!verificationOpen)}
+              className={cn(
+                'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium transition-colors cursor-pointer border ml-1',
+                message.verification.status === 'verified'
+                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
+                  : message.verification.status === 'partially_verified'
+                  ? 'bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20'
+                  : 'bg-zinc-500/10 text-zinc-400 border-zinc-500/30 hover:bg-zinc-500/20'
+              )}
+              title="Click to view evidence verification audit"
+            >
+              {message.verification.status === 'verified' ? (
+                <ShieldCheck className="h-3 w-3 text-emerald-400" />
+              ) : message.verification.status === 'partially_verified' ? (
+                <ShieldAlert className="h-3 w-3 text-amber-400" />
+              ) : (
+                <ShieldQuestion className="h-3 w-3 text-zinc-400" />
+              )}
+              <span>
+                {message.verification.status === 'verified'
+                  ? 'Verified'
+                  : message.verification.status === 'partially_verified'
+                  ? 'Partially Verified'
+                  : 'Unverified'}
+              </span>
+              {verificationOpen ? (
+                <ChevronUp className="h-2.5 w-2.5 opacity-60" />
+              ) : (
+                <ChevronDown className="h-2.5 w-2.5 opacity-60" />
+              )}
+            </button>
           )}
         </div>
 
@@ -174,6 +229,133 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Expandable Verification Audit Card */}
+        {!isUser && verificationOpen && message.verification && message.verification.is_factual && (
+          <div className="w-full mt-3 p-3.5 rounded-xl bg-moso-850/80 border border-moso-750/70 text-xs space-y-3 animate-fade-in shadow-xs">
+            <div className="flex items-center justify-between pb-2 border-b border-moso-750/50">
+              <div className="flex items-center gap-2">
+                {message.verification.status === 'verified' ? (
+                  <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                ) : message.verification.status === 'partially_verified' ? (
+                  <ShieldAlert className="h-4 w-4 text-amber-400" />
+                ) : (
+                  <ShieldQuestion className="h-4 w-4 text-zinc-400" />
+                )}
+                <div>
+                  <h4 className="font-semibold text-moso-100 text-[12.5px] capitalize">
+                    {message.verification.category} Verification Audit
+                  </h4>
+                  <p className="text-[10.5px] text-moso-400">
+                    Evidence Tier {message.verification.tier || 4}: {message.verification.tier_name?.replace('_', ' ') || 'General Knowledge'}
+                  </p>
+                </div>
+              </div>
+              <span
+                className={cn(
+                  'text-[10px] font-medium px-2 py-0.5 rounded-md border',
+                  message.verification.status === 'verified'
+                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                    : message.verification.status === 'partially_verified'
+                    ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                    : 'bg-zinc-500/10 text-zinc-400 border-zinc-500/30'
+                )}
+              >
+                {message.verification.status.toUpperCase().replace('_', ' ')}
+              </span>
+            </div>
+
+            {/* Disclaimer / Uncertainty acknowledgement if present */}
+            {message.verification.disclaimer && (
+              <div className="flex items-start gap-2 p-2.5 rounded-lg bg-moso-900/80 border border-moso-700/60 text-moso-300 text-[11.5px] leading-relaxed">
+                <AlertCircle className="h-3.5 w-3.5 text-amber-400 shrink-0 mt-0.5" />
+                <span>{message.verification.disclaimer}</span>
+              </div>
+            )}
+
+            {/* Verified claims */}
+            {message.verification.verified_claims && message.verification.verified_claims.length > 0 && (
+              <div className="space-y-1">
+                <div className="text-[11px] font-medium text-emerald-400 flex items-center gap-1.5">
+                  <CheckCircle2 className="h-3 w-3" />
+                  <span>Verified Claims & Grounding</span>
+                </div>
+                <ul className="space-y-1 pl-4 text-[11.5px] text-moso-250 list-disc marker:text-emerald-500">
+                  {message.verification.verified_claims.map((claim, idx) => (
+                    <li key={`vc-${idx}`}>{claim}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Unverified claims */}
+            {message.verification.unverified_claims && message.verification.unverified_claims.length > 0 && (
+              <div className="space-y-1">
+                <div className="text-[11px] font-medium text-amber-400 flex items-center gap-1.5">
+                  <AlertCircle className="h-3 w-3" />
+                  <span>Unverified Claims / Limitations</span>
+                </div>
+                <ul className="space-y-1 pl-4 text-[11.5px] text-moso-350 list-disc marker:text-amber-500">
+                  {message.verification.unverified_claims.map((claim, idx) => (
+                    <li key={`uvc-${idx}`}>{claim}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Quotation Verification */}
+            {message.verification.quotation_check?.has_quotes && (
+              <div className="pt-2 border-t border-moso-800/80 space-y-1.5">
+                <div className="text-[11px] font-medium text-moso-300 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <Quote className="h-3 w-3 text-moso-400" />
+                    <span>
+                      Quotation Audit ({message.verification.quotation_check.quotes_count || 0} quotes checked)
+                    </span>
+                  </span>
+                  <span
+                    className={cn(
+                      'text-[10px] font-mono',
+                      message.verification.quotation_check.all_quotes_verified
+                        ? 'text-emerald-400'
+                        : 'text-amber-400'
+                    )}
+                  >
+                    {message.verification.quotation_check.all_quotes_verified
+                      ? 'All Quotes Aligned'
+                      : 'Quotation Discrepancy'}
+                  </span>
+                </div>
+                {message.verification.quotation_check.details?.map((qd, qidx) => (
+                  <div
+                    key={`qd-${qidx}`}
+                    className="p-2 rounded bg-moso-900/60 border border-moso-800 text-[11px] flex items-center justify-between gap-2"
+                  >
+                    <span className="italic truncate max-w-[280px] text-moso-300">"{qd.quote}"</span>
+                    <span
+                      className={cn(
+                        'font-mono text-[10px] shrink-0',
+                        qd.verified ? 'text-emerald-400' : 'text-amber-400'
+                      )}
+                    >
+                      {qd.verified
+                        ? `✓ Match (${Math.round(qd.overlap_score * 100)}%)`
+                        : `⚠ Unaligned (${Math.round(qd.overlap_score * 100)}%)`}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Sources Consulted List */}
+            {message.verification.sources_consulted && message.verification.sources_consulted.length > 0 && (
+              <div className="pt-2 border-t border-moso-800/80 text-[11px] text-moso-400 flex items-center justify-between">
+                <span>Sources Consulted: {message.verification.sources_consulted.length}</span>
+                <span className="font-mono text-[10px] text-moso-500">Local Verified Index</span>
               </div>
             )}
           </div>

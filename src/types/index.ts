@@ -1,5 +1,39 @@
 export type ConnectionState = 'connected' | 'connecting' | 'disconnected' | 'generating';
 export type WorkspaceMode = 'chat' | 'project';
+export type VerificationStatus = 'verified' | 'partially_verified' | 'unverified' | 'none';
+
+export interface QuotationCheckDetail {
+  quote: string;
+  overlap_score: number;
+  verified: boolean;
+}
+
+export interface QuotationCheck {
+  has_quotes: boolean;
+  quotes_count?: number;
+  all_quotes_verified: boolean;
+  details?: QuotationCheckDetail[];
+}
+
+export interface VerificationReport {
+  status: VerificationStatus;
+  is_factual: boolean;
+  category: string;
+  tier?: number;
+  tier_name?: string;
+  sources_consulted?: Array<{
+    type?: string;
+    title?: string;
+    page_number?: number;
+    source_name?: string;
+    excerpt?: string;
+  }>;
+  verified_claims?: string[];
+  unverified_claims?: string[];
+  disclaimer?: string | null;
+  quotation_check?: QuotationCheck;
+  appropriate_abstention?: boolean;
+}
 
 export interface ModelInfo {
   id: string;
@@ -43,6 +77,7 @@ export interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
   citations?: Citation[];
+  verification?: VerificationReport;
   created_at: string;
   is_streaming?: boolean;
   error?: string;

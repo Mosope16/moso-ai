@@ -11,6 +11,7 @@ import {
   Project,
   ProjectActivity,
   ProjectNote,
+  VerificationReport,
   WorkspaceMode,
 } from '../types';
 import { api } from '../services/api';
@@ -697,6 +698,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     let streamedText = '';
     let currentCitations: Citation[] = [];
+    let currentVerification: VerificationReport | undefined = undefined;
 
     await streamService.streamChat(
       {
@@ -728,6 +730,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             )
           );
         },
+        onVerification: (verification: VerificationReport) => {
+          currentVerification = verification;
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === assistantMsgPlaceholder.id
+                ? { ...msg, verification }
+                : msg
+            )
+          );
+        },
         onComplete: async (fullText: string) => {
           setIsGenerating(false);
           setConnectionState('connected');
@@ -735,6 +747,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             ...assistantMsgPlaceholder,
             content: fullText,
             citations: currentCitations,
+            verification: currentVerification,
             is_streaming: false,
           };
 

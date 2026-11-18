@@ -20,6 +20,12 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 import httpx
 import pypdf
+from backend.verification import (
+    classify_query,
+    ReferenceEngine,
+    ResponseVerifier,
+    build_verification_system_prompt,
+)
 
 # ---------------------------------------------------------
 # Environment & Security Configuration
@@ -44,6 +50,7 @@ def load_env_file():
 load_env_file()
 
 DB_FILE = os.path.join(os.path.dirname(__file__), "moso.db")
+reference_engine = ReferenceEngine(DB_FILE)
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434").rstrip("/")
 DEFAULT_MODEL = "qwen3.5:2b"
 DEFAULT_MAX_TOKENS = 256
@@ -290,6 +297,7 @@ def init_db():
             role TEXT NOT NULL,
             content TEXT NOT NULL,
             citations TEXT,
+            verification_report TEXT,
             created_at TEXT NOT NULL,
             FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE
         )
@@ -333,6 +341,7 @@ def init_db():
         ("documents", "project_id", "TEXT"),
         ("document_chunks", "project_id", "TEXT"),
         ("messages", "citations", "TEXT"),
+        ("messages", "verification_report", "TEXT"),
     ]:
         try:
             c.execute(f"ALTER TABLE {tbl} ADD COLUMN {col} {col_type}")
@@ -1335,7 +1344,7 @@ async def get_conversation(conv_id: str):
         raise HTTPException(status_code=404, detail=f"Conversation '{conv_id}' not found")
 
     c.execute("""
-        SELECT id, role, content, citations, created_at 
+        SELECT id, role, content, citations, verification_report, created_at 
         FROM messages 
         WHERE conversation_id = ? 
         ORDER BY created_at ASC, rowid ASC
@@ -1350,11 +1359,18 @@ async def get_conversation(conv_id: str):
                 citations = json.loads(m["citations"])
             except Exception:
                 citations = []
+        verification = None
+        if m.get("verification_report"):
+            try:
+                verification = json.loads(m["verification_report"])
+            except Exception:
+                verification = None
         messages.append({
             "id": m["id"],
             "role": m["role"],
             "content": m["content"],
             "citations": citations,
+            "verification": verification,
             "created_at": m["created_at"],
         })
 
@@ -1762,7 +1778,11 @@ async def stream_chat(req: ChatRequest, request: Request):
     user_query = latest_user_msg.content if latest_user_msg else ""
     relevant_chunks = retrieve_relevant_chunks(conv_id=conv_id, project_id=project_id, query=user_query, max_words=1200)
 
-    # 4. Build citations list
+    # 4. Factual Classification & Multi-Tier Reference Grounding
+    intent = classify_query(user_query, has_workspace_documents=bool(relevant_chunks))
+    retrieved_material = reference_engine.retrieve_trusted_material(intent, relevant_chunks)
+
+    # Build citations list
     citations = [
         {
             "id": chk["id"],
@@ -1773,6 +1793,15 @@ async def stream_chat(req: ChatRequest, request: Request):
         }
         for chk in relevant_chunks
     ]
+    for s in retrieved_material.get("sources", []):
+        if s.get("type") != "uploaded_document":
+            citations.append({
+                "id": f"ref_{uuid.uuid4()}",
+                "document_id": "trusted_reference",
+                "filename": s.get("title", "Trusted Reference"),
+                "page_number": s.get("page_number", 1),
+                "excerpt": (s.get("excerpt") or s.get("text") or s.get("details") or s.get("value") or "")[:240],
+            })
 
     # 5. SSE Streaming Generator
     async def event_generator():
@@ -1786,31 +1815,12 @@ async def stream_chat(req: ChatRequest, request: Request):
             if project_instructions:
                 system_prompts.append(f"PROJECT RESEARCH INSTRUCTIONS:\n{project_instructions}")
 
-        if relevant_chunks:
-            chunk_excerpts = []
-            for chk in relevant_chunks:
-                chunk_excerpts.append(
-                    f"[Source: {chk['filename']}, Page {chk['page_number']}]:\n{chk['content']}"
-                )
-            context_block = "\n\n---\n\n".join(chunk_excerpts)
-            doc_grounding_prompt = f"""You have access to the following excerpts from documents in this workspace:
-
----
-{context_block}
----
-
-CITATION & EVIDENCE INSTRUCTIONS:
-1. Ground your answer in the provided document excerpts above.
-2. Explicitly cite the source filename and page number for every supported factual statement.
-3. If the provided excerpts do not contain enough evidence to answer the question, clearly state: "The attached document(s) do not contain sufficient evidence to answer this question."
-4. Do not invent citations, equations, or benchmark figures not present in the excerpts."""
-            system_prompts.append(doc_grounding_prompt)
+        # Add verification & grounding directives
+        verification_prompt = build_verification_system_prompt(intent, retrieved_material, project_instructions)
+        system_prompts.append(verification_prompt)
 
         base_messages = [{"role": m.role, "content": m.content} for m in req.messages]
-        if system_prompts:
-            ollama_messages = [{"role": "system", "content": "\n\n".join(system_prompts)}] + base_messages
-        else:
-            ollama_messages = base_messages
+        ollama_messages = [{"role": "system", "content": "\n\n".join(system_prompts)}] + base_messages
 
         ollama_payload = {
             "model": target_model,
@@ -1828,7 +1838,7 @@ CITATION & EVIDENCE INSTRUCTIONS:
         error_occurred = False
         assistant_msg_id = f"msg_{uuid.uuid4()}"
 
-        # Emit citations event if document evidence is used
+        # Emit citations event if document or reference evidence is used
         if citations:
             yield f"event: citations\ndata: {json.dumps({'citations': citations})}\n\n"
 
@@ -1879,16 +1889,25 @@ CITATION & EVIDENCE INSTRUCTIONS:
                 error_occurred = True
                 yield f"event: error\ndata: {json.dumps({'error': str(e), 'code': 'INTERNAL_GENERATION_ERROR'})}\n\n"
 
-            # Persist assistant response in SQLite with citations
+            # Run Factual & Quotation Verification Audit
+            verifier = ResponseVerifier()
+            verification_report = verifier.verify(user_query, full_content, intent, retrieved_material)
+
+            # Emit verification event via SSE if factual query
+            if verification_report and verification_report.get("is_factual"):
+                yield f"event: verification\ndata: {json.dumps({'verification': verification_report})}\n\n"
+
+            # Persist assistant response in SQLite with citations & verification report
             if full_content and not error_occurred:
                 try:
                     conn_save = get_db()
                     c_save = conn_save.cursor()
                     now_finish = datetime.datetime.now(datetime.timezone.utc).isoformat()
                     citations_json = json.dumps(citations) if citations else None
+                    verification_json = json.dumps(verification_report) if verification_report else None
                     c_save.execute(
-                        "INSERT INTO messages (id, conversation_id, role, content, citations, created_at) VALUES (?, ?, ?, ?, ?, ?)",
-                        (assistant_msg_id, conv_id, "assistant", full_content, citations_json, now_finish),
+                        "INSERT INTO messages (id, conversation_id, role, content, citations, verification_report, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                        (assistant_msg_id, conv_id, "assistant", full_content, citations_json, verification_json, now_finish),
                     )
                     c_save.execute("UPDATE conversations SET updated_at = ? WHERE id = ?", (now_finish, conv_id))
                     conn_save.commit()
@@ -1897,7 +1916,7 @@ CITATION & EVIDENCE INSTRUCTIONS:
                     print("Failed to save assistant message to SQLite:", e)
 
             if not client_cancelled and not error_occurred:
-                yield f"event: done\ndata: {json.dumps({'message_id': assistant_msg_id, 'finish_reason': 'stop', 'content': full_content, 'citations': citations})}\n\n"
+                yield f"event: done\ndata: {json.dumps({'message_id': assistant_msg_id, 'finish_reason': 'stop', 'content': full_content, 'citations': citations, 'verification': verification_report})}\n\n"
                 yield "data: [DONE]\n\n"
         finally:
             INFERENCE_SEMAPHORE.release()

@@ -1,8 +1,9 @@
-import { Citation, Conversation, DocumentInfo, HealthResponse, ModelInfo, Project, ProjectActivity, ProjectNote } from '../types';
+import { Citation, Conversation, DocumentInfo, HealthResponse, ModelInfo, Project, ProjectActivity, ProjectNote, VerificationReport } from '../types';
 
 export interface ChatStreamCallbacks {
   onToken: (token: string) => void;
   onCitations?: (citations: Citation[]) => void;
+  onVerification?: (verification: VerificationReport) => void;
   onComplete: (fullText: string) => void;
   onError: (error: Error) => void;
 }
@@ -819,14 +820,23 @@ export class FastApiClient {
                   callbacks.onCitations(parsed.citations);
                 }
               }
-              // 3. Inference error event
+              // 3. Verification report event
+              else if (currentEvent === 'verification' || parsed.verification) {
+                if (callbacks.onVerification && parsed.verification) {
+                  callbacks.onVerification(parsed.verification);
+                }
+              }
+              // 4. Inference error event
               else if (currentEvent === 'error' || parsed.error) {
                 throw new Error(parsed.error || 'Unknown streaming inference error');
               }
-              // 4. Final completion summary event
+              // 5. Final completion summary event
               else if (currentEvent === 'done') {
                 if (parsed.citations && callbacks.onCitations) {
                   callbacks.onCitations(parsed.citations);
+                }
+                if (parsed.verification && callbacks.onVerification) {
+                  callbacks.onVerification(parsed.verification);
                 }
                 isDone = true;
                 callbacks.onComplete(accumulatedText);
