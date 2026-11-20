@@ -53,8 +53,39 @@ export interface Citation {
   document_id: string;
   filename: string;
   document_name?: string;
-  page_number: number;
+  page_number?: number;
   excerpt: string;
+  url?: string;
+  title?: string;
+  domain?: string;
+  published_date?: string;
+  author?: string;
+  type?: 'document' | 'web';
+}
+
+export interface StreamStatus {
+  status: 'executing' | 'completed' | 'failed' | 'searching' | 'fetching' | string;
+  tool?: 'github_inspect' | 'web_search' | 'web_fetch' | 'evidence_gating' | string;
+  message: string;
+  url?: string;
+  repo?: string;
+  query?: string;
+  args?: Record<string, any>;
+  count?: number;
+}
+
+export interface RetrievalDiagnostic {
+  tool: string;
+  requested_url: string;
+  resolved_url: string;
+  http_status?: number | null;
+  success: boolean;
+  content_length: number;
+  error?: string | null;
+  error_type?: string | null;
+  identity_verified?: boolean | null;
+  files_retrieved?: string[];
+  retrieved_at: string;
 }
 
 export interface DocumentInfo {
@@ -78,6 +109,8 @@ export interface Message {
   content: string;
   citations?: Citation[];
   verification?: VerificationReport;
+  tool_calls?: Array<{ tool: string; args: Record<string, any>; result_count?: number }>;
+  diagnostics?: RetrievalDiagnostic[];
   created_at: string;
   is_streaming?: boolean;
   error?: string;
@@ -151,7 +184,7 @@ export interface AppSettings {
     sendShortcut: 'enter' | 'cmd_enter';
   };
   appearance: {
-    theme: 'dark' | 'oled' | 'zinc';
+    theme: 'system' | 'light' | 'dark' | 'oled' | 'zinc'; // oled and zinc are legacy values, shown as dark
     fontSize: 'small' | 'medium' | 'large';
     codeLigatures: boolean;
     compactMessages: boolean;

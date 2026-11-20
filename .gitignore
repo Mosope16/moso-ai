@@ -89,3 +89,10 @@ tmp/
 temp/
 *.pdf
 hallucination.md
+moso-ai.zip
+prompts.md
+moso-classifier-fix.patch
+moso-context-fix.patch
+moso-gate-fix.patch
+moso-ui-redesign.patch
+moso-scroll-fix.patch

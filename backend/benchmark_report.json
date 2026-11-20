@@ -1,0 +1,1467 @@
+{
+  "model": "qwen3.5:2b",
+  "total_questions": 53,
+  "correct_answers": 44,
+  "overall_accuracy_pct": 83.0,
+  "hallucination_rate_pct": 3.8,
+  "average_latency_sec": 27.66,
+  "average_tokens_per_sec": 6.5,
+  "total_benchmark_time_sec": 1466.8,
+  "by_category": {
+    "academic_research": {
+      "total": 3,
+      "correct": 3,
+      "accuracy_pct": 100.0,
+      "avg_latency": 73.53
+    },
+    "alzheimers": {
+      "total": 4,
+      "correct": 0,
+      "accuracy_pct": 0.0,
+      "avg_latency": 0.04
+    },
+    "biology": {
+      "total": 4,
+      "correct": 4,
+      "accuracy_pct": 100.0,
+      "avg_latency": 25.75
+    },
+    "creative": {
+      "total": 3,
+      "correct": 3,
+      "accuracy_pct": 100.0,
+      "avg_latency": 13.6
+    },
+    "document_qa": {
+      "total": 3,
+      "correct": 1,
+      "accuracy_pct": 33.3,
+      "avg_latency": 17.56
+    },
+    "exact_quotations": {
+      "total": 4,
+      "correct": 4,
+      "accuracy_pct": 100.0,
+      "avg_latency": 8.38
+    },
+    "false_premise": {
+      "total": 4,
+      "correct": 4,
+      "accuracy_pct": 100.0,
+      "avg_latency": 34.54
+    },
+    "general_knowledge": {
+      "total": 4,
+      "correct": 2,
+      "accuracy_pct": 50.0,
+      "avg_latency": 26.62
+    },
+    "history": {
+      "total": 4,
+      "correct": 4,
+      "accuracy_pct": 100.0,
+      "avg_latency": 20.08
+    },
+    "mathematics": {
+      "total": 4,
+      "correct": 4,
+      "accuracy_pct": 100.0,
+      "avg_latency": 9.56
+    },
+    "multi_step_reasoning": {
+      "total": 4,
+      "correct": 4,
+      "accuracy_pct": 100.0,
+      "avg_latency": 63.23
+    },
+    "programming": {
+      "total": 4,
+      "correct": 4,
+      "accuracy_pct": 100.0,
+      "avg_latency": 46.28
+    },
+    "science": {
+      "total": 4,
+      "correct": 3,
+      "accuracy_pct": 75.0,
+      "avg_latency": 28.16
+    },
+    "unanswerable": {
+      "total": 4,
+      "correct": 4,
+      "accuracy_pct": 100.0,
+      "avg_latency": 25.36
+    }
+  },
+  "detailed_results": [
+    {
+      "id": "gen_01_capital_australia",
+      "category": "general_knowledge",
+      "type": "direct_fact",
+      "question": "What is the capital city of Australia?",
+      "response": "The capital city of Australia is **Canberra**.\n\nWhile Canberra was originally planned as a new national capital by the Australian government in 1908, it was not officially designated as such until 1927. It was chosen over Sydney and Melbourne because neither of those cities had sufficient population to support a federal government. The city was named after the country's first Prime Minister, Arthur Fadden (though this is sometimes debated; some sources suggest it was named for the location where he was born or his family home).",
+      "latency_sec": 16.38,
+      "tokens": 104,
+      "tokens_per_sec": 6.3,
+      "is_correct": false,
+      "has_forbidden_hallucination": true,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "general_factual",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "gen_02_ocean_tides",
+      "category": "general_knowledge",
+      "type": "explanation",
+      "question": "What causes the ocean tides on Earth?",
+      "response": "The primary cause of ocean tides is **the gravitational attraction exerted by the Sun and the Moon** on the Earth's oceans.\n\nHere is a breakdown of how this works:\n\n1.  **Gravitational Pull**: Both the Sun and the Moon have mass, which creates a gravitational field around them. When these celestial bodies pull on the Earth, they generate tidal forces that distort the shape of the ocean surface.\n2.  **Relative Positions**: The interaction is not just about the absolute gravity; it depends on the relative positions of the Earth, the Sun, and the Moon.\n    *   **Spring Tides**: Occur during new moons and full moons when the Sun, Earth, and Moon align in a straight line. This alignment creates stronger gravitational pulls from both bodies, resulting in higher high tides and lower low tides (amplified by up to 1 meter or more).\n    *   **Neap Tides**: Occur during the first and third quarters of the moon when the Sun and Moon are at right angles to each other relative to the Earth. Their gravitational pulls partially cancel out, resulting in lower high tides and higher low tides (reduced by about half compared to spring tides).\n\nIn addition to these astronomical forces, **the rotation of the Earth** plays a crucial role. As the Earth spins, different parts of its surface pass through areas of maximum tidal force at different times, creating the daily cycle of two high tides and two low tides (semidiurnal tides) in most locations.\n\n*Note: While the Moon is the dominant factor due to being much closer than the Sun, the Sun's influence is significant enough that the combined effect of both bodies determines the exact height of the tides.*",
+      "latency_sec": 43.13,
+      "tokens": 349,
+      "tokens_per_sec": 8.1,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "conversational",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "gen_03_continents_count",
+      "category": "general_knowledge",
+      "type": "direct_fact",
+      "question": "How many continents are there on Earth?",
+      "response": "There is no single, universally agreed-upon number of continents because the classification varies depending on whether one follows strict geographic definitions (such as those used by UN or ISO standards) or more fluid cultural and historical groupings.\n\nUnder the **ISO 3166-2** standard and the most widely accepted modern scientific approach, there are **7 primary continents**:\n1.  Asia\n2.  Europe\n3.  Africa\n4.  North America\n5.  South America\n6.  Antarctica\n7.  Australia (sometimes listed separately as \"Australia\" or combined with Oceania)\n\nHowever, other organizations and regions sometimes add or exclude these to create additional categories:\n*   **Antarctica**: Sometimes counted as a distinct continent but also considered one of the seven main ones.\n*   **Oceania**: Often grouped with Australia/New Zealand instead of being a separate continent.\n*   **Americas**: The traditional North and South American continents are sometimes treated as a single \"Americas\" continent in older classifications.\n*   **Europe-Africa**: Sometimes combined into one continent due to historical or political reasons.\n\nIn summary, while the most common answer is **7**, depending on the specific classification system used, this number can range from 6 to 10.",
+      "latency_sec": 32.18,
+      "tokens": 241,
+      "tokens_per_sec": 7.5,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "conversational",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "gen_04_largest_organ",
+      "category": "general_knowledge",
+      "type": "direct_fact",
+      "question": "What is the largest organ of the human body?",
+      "response": "The largest organ of the human body is the **skin**.\n\nWhile the brain is often cited as the most important organ due to its central role in controlling bodily functions, skin covers approximately 1.5 to 2 square meters (about 16\u201320 square feet) and contains roughly 50 trillion cells. It serves multiple critical functions, including protection against physical damage and disease, regulation of body temperature, absorption of nutrients and water, and the production of vitamin D.",
+      "latency_sec": 14.8,
+      "tokens": 93,
+      "tokens_per_sec": 6.3,
+      "is_correct": false,
+      "has_forbidden_hallucination": true,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "general_factual",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "sci_01_newtons_third_law",
+      "category": "science",
+      "type": "scientific_law",
+      "question": "State Newton's third law of motion.",
+      "response": "Newton's Third Law of Motion states that **for every action, there is an equal and opposite reaction**.\n\nThis means that whenever one object exerts a force on a second object, the second object simultaneously exerts a force of equal magnitude but in the opposite direction on the first object. These forces always occur in pairs and act on different objects.\n\n**Key Points:**\n*   **Equal Magnitude:** The size of the action force is exactly equal to the reaction force.\n*   **Opposite Direction:** The reaction force points directly opposite to the action force.\n*   **Different Objects:** Crucially, these forces do not cancel each other out because they act on different bodies (e.g., if you push a wall, the wall pushes back on your hand).",
+      "latency_sec": 22.14,
+      "tokens": 150,
+      "tokens_per_sec": 6.8,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "scientific",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "sci_02_fission_vs_fusion",
+      "category": "science",
+      "type": "explanation",
+      "question": "Explain the difference between nuclear fission and nuclear fusion.",
+      "response": "The primary difference between **nuclear fission** and **nuclear fusion** lies in how they split or combine atomic nuclei to release energy, as well as their current applications and feasibility for sustained power generation.\n\n### 1. Nuclear Fission\nNuclear fission is the process where a heavy atomic nucleus (such as Uranium-235 or Plutonium-239) splits into two or more lighter nuclei, releasing a significant amount of energy along with neutrons and gamma rays.\n\n*   **Mechanism:** A neutron strikes the nucleus of a heavy atom, causing it to become unstable and split. This process is often triggered by a chain reaction because the fission fragments release additional free neutrons that can strike other nearby nuclei.\n*   **Current Use:** Fission is currently used for electricity generation in most nuclear power plants (e.g., those using Uranium or Plutonium). It is also utilized in nuclear weapons.\n*   **Pros/Cons:** It provides a dense, reliable source of energy and has no long-lived radioactive waste compared to fusion. However, it poses significant challenges regarding safety (risk of meltdown) and the management of high-level radioactive waste.\n\n### 2. Nuclear Fusion\nNuclear fusion is the process where two light atomic nuclei combine to form a heavier nucleus, releasing a tremendous amount of energy in the process. This is the same mechanism that powers the Sun and stars.\n\n*   **Mechanism:** Light nuclei (such as isotopes of hydrogen like Deuterium and Tritium) are forced together under extreme heat and pressure. The resulting heavier nucleus has more binding energy per nucleon than the individual lighter ones, releasing the excess energy as kinetic energy (heat/light).\n*   **Current Use:** Fusion is not yet used for commercial electricity generation on a large scale. It remains an experimental field in research reactors like ITER or private companies like Commonwealth Fusion Systems.\n*   **Pros/Cons:** Fusion offers the potential for virtually limitless fuel (e.g., seawater), produces no long-lived radioactive waste, and generates very little radiation compared to fission. The main challenge is achieving and maintaining the precise conditions (high temperature and pressure) required to sustain a self-propagating reaction.\n\n### Summary Comparison\n\n| Feature | Nuclear Fission | Nuclear Fusion |\n| :--- | :--- | :--- |\n| **Process** | Splitting heavy nuclei | Combining light nuclei |\n| **Fuel Source** | Uranium, Pl",
+      "latency_sec": 56.19,
+      "tokens": 489,
+      "tokens_per_sec": 8.7,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "scientific",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "sci_03_absolute_zero",
+      "category": "science",
+      "type": "direct_fact",
+      "question": "What is absolute zero in Celsius?",
+      "response": "Absolute zero is **\u2212273.15\u00b0C** (or exactly \u2212273.15 K).\n\nThis temperature represents the theoretical point at which all thermal motion of particles ceases, and a system reaches its minimum possible energy state. While scientists have measured temperatures extremely close to this value, they can never reach it because it would require removing an infinite amount of heat from a system.",
+      "latency_sec": 12.77,
+      "tokens": 81,
+      "tokens_per_sec": 6.3,
+      "is_correct": false,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "scientific",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "sci_04_fundamental_forces",
+      "category": "science",
+      "type": "direct_fact",
+      "question": "Name the four fundamental forces of nature in physics.",
+      "response": "The four fundamental forces of nature are:\n\n1.  **Gravitational Force**: The attractive force between all objects with mass. It is the weakest of the four but has an infinite range and governs the motion of celestial bodies.\n2.  **Electromagnetic Force**: The force that acts between electrically charged particles. It is responsible for holding atoms together, enabling chemistry, electricity, magnetism, and light (electromagnetic radiation).\n3.  **Strong Nuclear Force**: The strongest fundamental force, acting within the atomic nucleus to bind protons and neutrons together. It overcomes the electromagnetic repulsion between positively charged protons.\n4.  **Weak Nuclear Force**: Responsible for radioactive decay processes such as beta decay. It is responsible for nuclear fusion in stars and plays a key role in particle physics.",
+      "latency_sec": 21.54,
+      "tokens": 161,
+      "tokens_per_sec": 7.5,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "scientific",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "bio_01_mitochondria",
+      "category": "biology",
+      "type": "explanation",
+      "question": "What is the primary function of mitochondria in eukaryotic cells?",
+      "response": "The primary function of mitochondria in eukaryotic cells is **cellular respiration**, specifically the production of adenosine triphosphate (**ATP**), the cell's main energy currency.\n\nMitochondria are often referred to as the \"powerhouses\" of the cell because they generate ATP through a process called oxidative phosphorylation (and the Krebs cycle). This occurs in two main stages:\n1.  **The Citric Acid Cycle (Krebs Cycle):** Located in the mitochondrial matrix, this stage breaks down acetyl-CoA derived from glucose and other fuels to produce high-energy electron carriers (NADH and FADH\u2082) and some ATP directly.\n2.  **The Electron Transport Chain:** Located in the inner mitochondrial membrane, this system uses the electrons from NADH and FADH\u2082 to pump protons across the membrane, creating a gradient that drives ATP synthase to produce large amounts of ATP.\n\nWhile mitochondria also play roles in apoptosis (programmed cell death), calcium storage, and heat production, their fundamental purpose remains energy generation for the cell's metabolic needs.",
+      "latency_sec": 27.13,
+      "tokens": 220,
+      "tokens_per_sec": 8.1,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "general_factual",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "bio_02_central_dogma",
+      "category": "biology",
+      "type": "explanation",
+      "question": "What is the central dogma of molecular biology?",
+      "response": "The **central dogma of molecular biology** describes the flow of genetic information within a biological system. It states that:\n\n1.  **DNA** (deoxyribonucleic acid) contains the genetic instructions for the development, functioning, growth, and reproduction of all known organisms.\n2.  This information is copied to make an identical copy of itself during **replication**.\n3.  The DNA sequence is then used to synthesize a complementary strand of **RNA** (ribonucleic acid).\n4.  Finally, the RNA sequence directs the synthesis of specific proteins through the process of **translation**.\n\nIn summary: **DNA $\\rightarrow$ RNA $\\rightarrow$ Protein**.\n\nWhile exceptions exist (such as retroviruses that reverse transcribe RNA back into DNA or some viruses that replicate directly in host cells), this directional flow is the fundamental principle governing how genetic information is stored, processed, and expressed in most living organisms.",
+      "latency_sec": 25.06,
+      "tokens": 184,
+      "tokens_per_sec": 7.3,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "scientific",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "bio_03_prokaryote_vs_eukaryote",
+      "category": "biology",
+      "type": "explanation",
+      "question": "What is the key structural difference between prokaryotic and eukaryotic cells?",
+      "response": "The key structural difference between prokaryotic and eukaryotic cells is the presence of a **membrane-bound nucleus** (and other membrane-bound organelles) in eukaryotic cells, which is absent in prokaryotic cells.\n\n*   **Eukaryotic Cells**: These cells contain a true nucleus enclosed by a nuclear envelope, as well as various membrane-bound organelles such as mitochondria, the endoplasmic reticulum, and the Golgi apparatus. Their DNA is typically located within this nucleus in linear chromosomes.\n*   **Prokaryotic Cells**: These cells lack a true nucleus; their genetic material (usually a single circular chromosome) is found free-floating in the cytoplasm in a region called the nucleoid. They also generally lack membrane-bound organelles like mitochondria or a Golgi apparatus.\n\nThis fundamental distinction defines the two major groups of life on Earth.",
+      "latency_sec": 25.44,
+      "tokens": 185,
+      "tokens_per_sec": 7.3,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "general_factual",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "bio_04_mrna_vaccine_mechanism",
+      "category": "biology",
+      "type": "explanation",
+      "question": "How do mRNA vaccines stimulate an immune response?",
+      "response": "mRNA vaccines work by acting as a temporary delivery system for instructions that tell your body how to build its own specific proteins (antigens). Here is the step-by-step process of how they stimulate an immune response:\n\n1.  **Delivery**: The vaccine contains synthetic mRNA, which is injected into the muscle or fat tissue.\n2.  **Translation**: Inside the cells, the mRNA is read by ribosomes and translated into a protein called a viral spike (or similar surface protein). This happens because mRNA does not enter the nucleus; instead, it travels to the cytoplasm where translation occurs.\n3.  **Presentation**: The resulting protein is displayed on the cell's surface by MHC Class I molecules.\n4.  **Immune Activation**: Antigen-presenting cells (APCs) like dendritic cells recognize this foreign protein and present it to T-cells. This triggers a robust adaptive immune response, including the production of antibodies and activation of cytotoxic T-cells.\n5.",
+      "latency_sec": 25.36,
+      "tokens": 197,
+      "tokens_per_sec": 7.8,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": null
+    },
+    {
+      "id": "alz_01_amyloid_and_tau",
+      "category": "alzheimers",
+      "type": "academic_explanation",
+      "question": "What role do amyloid-beta plaques and neurofibrillary tau tangles play in Alzheimer's disease pathology?",
+      "response": "",
+      "latency_sec": 0.04,
+      "tokens": 0,
+      "tokens_per_sec": 0.0,
+      "is_correct": false,
+      "has_forbidden_hallucination": false,
+      "verification": null
+    },
+    {
+      "id": "alz_02_mri_neurodegeneration",
+      "category": "alzheimers",
+      "type": "academic_explanation",
+      "question": "How is structural MRI utilized to assess neurodegeneration in Alzheimer's patients?",
+      "response": "",
+      "latency_sec": 0.04,
+      "tokens": 0,
+      "tokens_per_sec": 0.0,
+      "is_correct": false,
+      "has_forbidden_hallucination": false,
+      "verification": null
+    },
+    {
+      "id": "alz_03_cholinesterase_inhibitors",
+      "category": "alzheimers",
+      "type": "direct_fact",
+      "question": "Which neurotransmitter is targeted by cholinesterase inhibitors in Alzheimer's treatment?",
+      "response": "",
+      "latency_sec": 0.04,
+      "tokens": 0,
+      "tokens_per_sec": 0.0,
+      "is_correct": false,
+      "has_forbidden_hallucination": false,
+      "verification": null
+    },
+    {
+      "id": "alz_04_apoe4_allele",
+      "category": "alzheimers",
+      "type": "academic_explanation",
+      "question": "What is the clinical significance of the APOE epsilon 4 allele in Alzheimer's disease risk?",
+      "response": "",
+      "latency_sec": 0.03,
+      "tokens": 0,
+      "tokens_per_sec": 0.0,
+      "is_correct": false,
+      "has_forbidden_hallucination": false,
+      "verification": null
+    },
+    {
+      "id": "prog_01_palindrome_python",
+      "category": "programming",
+      "type": "code",
+      "question": "Write a Python function `is_palindrome(s)` that returns True if a string is a palindrome.",
+      "response": "```python\ndef is_palindrome(s: str) -> bool:\n    \"\"\"\n    Returns True if the input string s is a palindrome, False otherwise.\n    \n    A palindrome reads the same forwards and backwards.\n    We handle case sensitivity by converting to lowercase and ignore non-alphanumeric characters.\n    \"\"\"\n    # Normalize the string: convert to lowercase and keep only alphanumeric characters\n    normalized = ''.join(ch.lower() for ch in s if ch.isalnum())\n    \n    # Check if the normalized string is equal to its reverse\n    return normalized == normalized[::-1]\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    test_cases = [\n        \"A man, a plan, a canal: Panama\",  # True\n        \"racecar\",                           # True\n        \"hello\",                           # False\n        \"No 'x' in Nixon\",                 # True (ignoring non-alphanumeric)\n        \"12321\",                           # True\n        \"\",                                # True\n    ]\n\n    for test in test_cases:\n        result = is_palindrome(test)\n        print(f\"'{test}' -> {result}\")\n```",
+      "latency_sec": 52.34,
+      "tokens": 196,
+      "tokens_per_sec": 3.7,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "general_factual",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "prog_02_mutable_vs_immutable",
+      "category": "programming",
+      "type": "explanation",
+      "question": "Explain the difference between mutable and immutable data types in Python with examples.",
+      "response": "In Python, the distinction between **mutable** and **immutable** data types is fundamental to how objects are stored, copied, and modified. The core difference lies in whether an object can be changed after it has been created.\n\n### 1. Mutable Data Types\nA mutable type is one that can be altered in place once it exists. This means you can change its attributes or content without creating a new object.\n\n*   **Characteristics**: Can be modified directly; sharing references between variables does not prevent changes to the original data.\n*   **Common Examples**: Lists, dictionaries, sets, and tuples (note: tuples are technically immutable in Python but behave like mutable sequences in many contexts).\n\n**Example with a List:**\n```python\nmy_list = [1, 2, 3]\n\n# This modifies the list in place. The original list object remains unchanged, \n# but the variable holding it now points to a different state.\nmy_list.append(4)\nprint(my_list) # Output: [1, 2, 3, 4]\n```\n*Note: If you had two variables pointing to the same list object (`list1 = list2`), modifying `list1` would also change `list2`. This is why mutable types are often used for shared state.*\n\n### 2. Immutable Data Types\nAn immutable type cannot be changed after it has been created. Any attempt to modify an attribute of an immutable object will raise a `TypeError`. To \"change\" the data, you must create a new object and assign it back to the variable.\n\n*   **Characteristics**: Cannot be modified in place; sharing references is safe because changing one reference does not affect the other.\n*   **Common Examples**: Integers (`int`), floats (`float`), strings (`str`), tuples, and booleans.\n\n**Example with a String:**\n```python\nmy_string = \"Hello\"\n\n# Attempting to modify the string directly raises an error.\n# my_string += \"World\" # TypeError: 'str' object does not support item assignment\n\n# To achieve this, you must create a new string object and assign it.\nnew_string = my_string + \" World\"\nprint(new_string) # Output: Hello World\n```\n*Note: While strings are immutable, they are often treated as mutable in practice because Python allows reassignment of the variable name (`my_string = ...`), which creates a new string",
+      "latency_sec": 57.58,
+      "tokens": 474,
+      "tokens_per_sec": 8.2,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "general_factual",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "prog_03_binary_search_complexity",
+      "category": "programming",
+      "type": "direct_fact",
+      "question": "What is the time complexity of binary search on a sorted array of size n?",
+      "response": "The time complexity of binary search on a sorted array of size $n$ is **$O(\\log n)$**.\n\n### Explanation\nBinary search works by repeatedly dividing the search interval in half. In each step, it compares the target value to the middle element of the current range:\n- If the target matches the middle element, the search terminates.\n- If the target is less than the middle element, the search continues in the lower half.\n- If the target is greater, the search continues in the upper half.\n\nSince the size of the search interval is halved at each step, the number of steps required to find an element or determine its absence grows logarithmically with respect to $n$. Therefore, the time complexity is $O(\\log n)$.",
+      "latency_sec": 18.65,
+      "tokens": 153,
+      "tokens_per_sec": 8.2,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "general_factual",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "prog_04_concurrency_vs_parallelism",
+      "category": "programming",
+      "type": "explanation",
+      "question": "What is the difference between concurrency and parallelism?",
+      "response": "The primary difference between **concurrency** and **parallelism** lies in how they handle overlapping execution of tasks within a system, particularly regarding scheduling and resource utilization.\n\n### Core Definitions\n\n*   **Concurrency**: This refers to the ability of a system to execute multiple tasks or operations at the same time, even if those operations are not physically running simultaneously on a single processor. In other words, it is about **logical simultaneity**. Concurrency allows the user (or application) to perceive that two events happened at once, without requiring them to be executed in parallel.\n*   **Parallelism**: This refers to the actual execution of multiple tasks or operations simultaneously by different processors, cores, or threads on a single machine. It is about **physical simultaneity**. Parallelism requires hardware resources (multiple CPU cores) to achieve this effect.\n\n### Key Differences\n\n| Feature | Concurrency | Parallelism |\n| :--- | :--- | :--- |\n| **Execution** | Tasks are scheduled to run in overlapping time intervals. | Tasks are executed simultaneously by multiple processors. |\n| **Hardware Requirement** | Can be achieved with a single processor using multitasking (e.g., OS scheduling). | Requires multiple processors, cores, or threads. |\n| **User Perception** | The user sees the system as working on one task at a time, but it switches rapidly to appear concurrent. | The user sees the system working on multiple tasks simultaneously. |\n| **Complexity** | Generally easier to implement and manage (e.g., by an operating system). | More complex to design and debug due to race conditions and synchronization issues. |\n\n### Illustrative Example\n\nImagine a chef preparing a large meal:\n\n1.  **Concurrency**: The chef might chop vegetables, then stir the pot, then saut\u00e9 meat, but these actions happen one after another in the chef's mind or schedule. However, if the kitchen has multiple stations and the chef uses a system that switches tasks rapidly to make it look like everything is happening at once, this is **concurrency**.\n2.  **Parallelism**: If the chef has two assistants working on different parts of the meal (chopping one side while saut\u00e9ing the other) simultaneously using separate tools and stations, this is **parallelism**.\n\n### Conclusion\n\nIn summary, **concurrency** is about managing multiple tasks to appear simultaneous within a single logical flow, often handled by an operating system scheduler. **Parallelism** is about executing multiple",
+      "latency_sec": 56.55,
+      "tokens": 492,
+      "tokens_per_sec": 8.7,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "general_factual",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "math_01_multiplication",
+      "category": "mathematics",
+      "type": "deterministic_tool",
+      "question": "Calculate 347 * 28.",
+      "response": "The exact result of $347 \\times 28$ is **9,716**.\n\nHere is the step-by-step calculation:\n$$347 \\times 28 = (300 + 40 + 7) \\times 28$$\n$$= (300 \\times 28) + (40 \\times 28) + (7 \\times 28)$$\n$$= 8,400 + 1,120 + 196$$\n$$= 9,520 + 196$$\n$$= 9,716$$",
+      "latency_sec": 19.12,
+      "tokens": 120,
+      "tokens_per_sec": 6.3,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "unverified",
+        "is_factual": true,
+        "category": "scientific",
+        "tier": 4,
+        "tier_name": "general_knowledge",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [
+          "Claim generated from general model knowledge; no primary source consulted."
+        ],
+        "disclaimer": "This explanation is based on general model knowledge and has not been independently verified.",
+        "quotation_check": {
+          "has_quotes": false,
+          "quotes_count": 0,
+          "all_quotes_verified": true,
+          "details": []
+        },
+        "appropriate_abstention": false
+      }
+    },
+    {
+      "id": "math_02_square_root",
+      "category": "mathematics",
+      "type": "deterministic_tool",
+      "question": "What is the square root of 1764?",
+      "response": "The square root of 1764 is **42**.\n\nThis can be verified by squaring 42:\n\\[ 42 \\times 42 = 1764 \\]\n\nMathematically, this is expressed as:\n\\[ \\sqrt{1764} = 42 \\]",
+      "latency_sec": 9.02,
+      "tokens": 60,
+      "tokens_per_sec": 6.7,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "unverified",
+        "is_factual": true,
+        "category": "scientific",
+        "tier": 4,
+        "tier_name": "general_knowledge",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [
+          "Claim generated from general model knowledge; no primary source consulted."
+        ],
+        "disclaimer": "This explanation is based on general model knowledge and has not been independently verified.",
+        "quotation_check": {
+          "has_quotes": false,
+          "quotes_count": 0,
+          "all_quotes_verified": true,
+          "details": []
+        },
+        "appropriate_abstention": false
+      }
+    },
+    {
+      "id": "math_03_percentage",
+      "category": "mathematics",
+      "type": "deterministic_tool",
+      "question": "What is 15% of 850?",
+      "response": "The exact result of 15% of 850 is **127.5**.\n\nThis can be calculated as follows:\n\\[ 0.15 \\times 850 = 127.5 \\]",
+      "latency_sec": 6.94,
+      "tokens": 44,
+      "tokens_per_sec": 6.3,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "unverified",
+        "is_factual": true,
+        "category": "scientific",
+        "tier": 4,
+        "tier_name": "general_knowledge",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [
+          "Claim generated from general model knowledge; no primary source consulted."
+        ],
+        "disclaimer": "This explanation is based on general model knowledge and has not been independently verified.",
+        "quotation_check": {
+          "has_quotes": false,
+          "quotes_count": 0,
+          "all_quotes_verified": true,
+          "details": []
+        },
+        "appropriate_abstention": false
+      }
+    },
+    {
+      "id": "math_04_power",
+      "category": "mathematics",
+      "type": "deterministic_tool",
+      "question": "Evaluate 2^10.",
+      "response": "The exact result of $2^{10}$ is **1024**.",
+      "latency_sec": 3.17,
+      "tokens": 17,
+      "tokens_per_sec": 5.4,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "unverified",
+        "is_factual": true,
+        "category": "scientific",
+        "tier": 4,
+        "tier_name": "general_knowledge",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [
+          "Claim generated from general model knowledge; no primary source consulted."
+        ],
+        "disclaimer": "This explanation is based on general model knowledge and has not been independently verified.",
+        "quotation_check": {
+          "has_quotes": false,
+          "quotes_count": 0,
+          "all_quotes_verified": true,
+          "details": []
+        },
+        "appropriate_abstention": false
+      }
+    },
+    {
+      "id": "hist_01_wwii_europe_end",
+      "category": "history",
+      "type": "direct_fact",
+      "question": "In what year did World War II end in Europe?",
+      "response": "World War II ended in Europe with the **V-E Day** (Victory in Europe) ceremony on **May 8, 1945**.\n\nWhile the war officially concluded with Germany's surrender on May 8, 1945, and the unconditional surrender was accepted by the Allies on September 2, 1945, the pivotal turning point occurred on May 8. This date marked the end of hostilities in Western Europe and is celebrated as V-E Day.\n\n**Key details:**\n*   **Date:** May 8, 1945\n*   **Event:** The German High Command announced their surrender to the Allies at El Alamein (though the actual signing took place in Berlin on September 2).\n*   **Context:** This followed the earlier V-J Day (Victory over Japan) ceremony on August 15, 1945.",
+      "latency_sec": 22.09,
+      "tokens": 169,
+      "tokens_per_sec": 7.7,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "historical",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "hist_02_magna_carta",
+      "category": "history",
+      "type": "explanation",
+      "question": "What was the significance of the Magna Carta signed in 1215?",
+      "response": "The **Magna Carta** (Latin for \"Great Charter\"), signed on **June 15, 1215**, by King John of England at Runnymede, is one of the most significant documents in legal and political history. Its primary significance lies in establishing that **the monarch is not above the law**.\n\nHere are the key aspects of its importance:\n\n*   **Limitation of Royal Power**: It was a direct response to the barons' demands for justice after King John's harsh rule, which had led to widespread rebellion and civil war. The charter explicitly stated that no free man could be imprisoned or fined without \"due process\" (fair trial).\n*   **The Principle of Due Process**: It introduced the concept that legal proceedings must follow established rules and procedures, protecting individuals from arbitrary arrest and punishment. This laid the groundwork for modern constitutional law.\n*   **Freedom from Feudal Oaths**: The charter declared that no one could be bound by a feudal oath to do anything but what was required by law. It effectively ended the practice of binding subjects to their lords through oaths, limiting the lord's power over his vassals.\n*   **Foundation for Constitutionalism**: While King John eventually broke the terms of the charter and imprisoned its signatories, the Magna Carta became a symbol of liberty and justice. Over centuries, it influenced the development of English common law and eventually inspired similar charters in other countries, including the United States' Declaration of Independence (\"We hold these truths to be self-evident... that all men are created equal\").\n\nIn summary, the Magna Carta is historically significant because it marked a pivotal shift from absolute monarchy to a system where **law prevails over the ruler**, serving as a foundational precedent for human rights and constitutional governance.",
+      "latency_sec": 42.06,
+      "tokens": 357,
+      "tokens_per_sec": 8.5,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "historical",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "hist_03_first_us_president",
+      "category": "history",
+      "type": "direct_fact",
+      "question": "Who was the first President of the United States?",
+      "response": "The first President of the United States was **George Washington**. He served as the third President of the United States, succeeding John Adams and preceding Thomas Jefferson. Washington was unanimously elected by the Electoral College in 1789 and took office on March 4, 1789.",
+      "latency_sec": 7.72,
+      "tokens": 56,
+      "tokens_per_sec": 7.3,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "historical",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "hist_04_un_foundation_year",
+      "category": "history",
+      "type": "direct_fact",
+      "question": "In what year was the United Nations established?",
+      "response": "The United Nations was established in **1945**.\n\nIt officially came into existence on **October 24, 1945**, following the opening of the San Francisco Conference and the signing of the UN Charter. The organization was formally admitted to the United Nations on January 1, 1946.",
+      "latency_sec": 8.44,
+      "tokens": 62,
+      "tokens_per_sec": 7.3,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "historical",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "reas_01_average_speed",
+      "category": "multi_step_reasoning",
+      "type": "reasoning",
+      "question": "If a car travels 60 miles per hour for 2 hours, and then 45 miles per hour for 3 hours, what is its average speed for the entire trip?",
+      "response": "To find the average speed for the entire trip, we must use the definition of average speed: **Total Distance Divided by Total Time**.\n\nHere is the step-by-step breakdown:\n\n### 1. Identify the Core Problem / Question Identification\nThe user wants to calculate the overall average speed ($v_{avg}$) given two segments of a journey with different speeds and durations. The key principle is that average speed depends on total distance, not just the arithmetic mean of the two speeds.\n\n### 2. Fundamental Principles or Mechanism\n*   **Formula**: $v_{avg} = \\frac{d_{total}}{t_{total}}$\n*   **Distinction**: Average speed is **not** the average of the individual speeds ($\\frac{v_1 + v_2}{2}$). This would only be true if the time spent at each speed was equal. Here, the car spends more time traveling at the slower speed (3 hours vs. 2 hours), so the final average must be lower than the arithmetic mean of 72.5 mph.\n\n### 3. Step-by-Step Analysis / Derivation\n**Step A: Calculate the distance for each segment.**\n*   **Segment 1**: Speed $v_1 = 60$ mph, Time $t_1 = 2$ hours.\n    $$d_1 = v_1 \\times t_1 = 60 \\text{ mph} \\times 2 \\text{ h} = 120 \\text{ miles}$$\n*   **Segment 2**: Speed $v_2 = 45$ mph, Time $t_2 = 3$ hours.\n    $$d_2 = v_2 \\times t_2 = 45 \\text{ mph} \\times 3 \\text{ h} = 135 \\text{ miles}$$\n\n**Step B: Calculate the total distance.**\n$$d_{total} = d_1 + d_2 = 120 \\text{ miles} + 135 \\text{ miles} = 255 \\text{ miles}$$\n\n**Step C: Calculate the total time.**\n$$t_{total} = t_1 + t_2 = 2 \\text{ hours} + 3 \\text{ hours} = 5 \\text{ hours}$$\n\n**Step D: Calculate the average speed.**\n$$v_{avg} = \\frac{d_{total}}{t_{total}} = \\frac{255 \\text{ miles}}{5 \\text{ hours}} = 51 \\text{ mph}$$\n\n### 4. Conclusion / Summary\nThe car's average speed for the entire trip is **51 mph**.",
+      "latency_sec": 64.98,
+      "tokens": 533,
+      "tokens_per_sec": 8.2,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "general_factual",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "reas_02_probability_marbles",
+      "category": "multi_step_reasoning",
+      "type": "reasoning",
+      "question": "A bag contains 5 red balls, 3 green balls, and 2 blue balls. If one ball is chosen at random, what is the probability of picking a green ball?",
+      "response": "### Core Problem Identification\nThe user wants to calculate the probability of selecting a specific color (green) from a bag containing multiple colored balls.\n\n### Fundamental Principles or Mechanism\nProbability is calculated as the ratio of the number of favorable outcomes to the total number of possible outcomes in a random experiment.\n*   **Total Outcomes**: The sum of all individual balls in the bag.\n*   **Favorable Outcomes**: The count of balls that match the desired color (green).\n\n### Step-by-Step Analysis / Derivation\n1.  **Identify the counts for each color:**\n    *   Red balls: 5\n    *   Green balls: 3\n    *   Blue balls: 2\n\n2.  **Calculate the total number of balls:**\n    $$ \\text{Total} = 5 + 3 + 2 = 10 $$\n\n3.  **Identify the number of favorable outcomes (green balls):**\n    $$ \\text{Green} = 3 $$\n\n4.  **Calculate the probability ($P$):**\n    $$ P(\\text{Green}) = \\frac{\\text{Number of Green Balls}}{\\text{Total Number of Balls}} $$\n    $$ P(\\text{Green}) = \\frac{3}{10} $$\n\n5.  **Convert to decimal (optional but helpful):**\n    $$ \\frac{3}{10} = 0.3 $$\n\n### Conclusion / Summary\nThe probability of picking a green ball is **3/10** (or 0.3).",
+      "latency_sec": 101.51,
+      "tokens": 280,
+      "tokens_per_sec": 2.8,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "general_factual",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "reas_03_syllogism",
+      "category": "multi_step_reasoning",
+      "type": "reasoning",
+      "question": "If all bloops are razzies, and all razzies are snarks, are all bloops definitely snarks?",
+      "response": "Yes, **all bloops are definitely snarks**.\n\nHere is the step-by-step logical deduction:\n\n1.  **Identify the Premises**:\n    *   Premise A: All bloops are razzies.\n    *   Premise B: All razzies are snarks.\n\n2.  **Analyze the Relationship**:\n    *   The statement \"All $X$ are $Y$\" means that every member of set $X$ is also a member of set $Y$.\n    *   Therefore, every bloop is a razzie.\n    *   Since every razzie is a snark, and every bloop is a razzie, it logically follows that every bloop must also be a snark.\n\n3.  **Formal Logic (Categorical Syllogism)**:\n    *   This is a classic example of the **Baroco** syllogism structure (or specifically, a valid chain of subalternation).\n    *   If $B \\subseteq R$ and $R \\subseteq S$, then $B \\subseteq S$.\n\n**Conclusion**:\nYes, based on the premises provided, all bloops are definitely snarks.",
+      "latency_sec": 30.17,
+      "tokens": 223,
+      "tokens_per_sec": 7.4,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "general_factual",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "reas_04_water_tank",
+      "category": "multi_step_reasoning",
+      "type": "reasoning",
+      "question": "A water tank has an inlet filling at 5 liters per minute and an outlet draining at 2 liters per minute. If the tank starts with 30 liters, how much water will it have after 10 minutes?",
+      "response": "### Core Problem / Question Identification\nThe problem asks for the final volume of water in a tank after a specific duration given constant rates of inflow and outflow, starting from an initial volume.\n\n### Fundamental Principles or Mechanism\nThe change in the volume of liquid in a closed system over time is governed by the **Net Flow Rate**:\n$$ \\text{Net Flow Rate} = \\text{Inflow Rate} - \\text{Outflow Rate} $$\nIf the net flow rate is positive, the tank fills up; if negative, it drains down. The total volume at any time $t$ is calculated by adding the initial volume to the product of the net flow rate and the elapsed time.\n\n### Step-by-Step Analysis / Derivation\n1.  **Identify Given Values**:\n    *   Initial Volume ($V_0$) = 30 liters\n    *   Inflow Rate ($R_{in}$) = 5 liters/minute\n    *   Outflow Rate ($R_{out}$) = 2 liters/minute\n    *   Time ($t$) = 10 minutes\n\n2.  **Calculate Net Flow Rate**:\n    $$ R_{net} = R_{in} - R_{out} = 5 \\, \\text{L/min} - 2 \\, \\text{L/min} = 3 \\, \\text{L/min} $$\n    Since the net rate is positive, the water level will rise.\n\n3.  **Calculate Total Volume Added**:\n    Multiply the net flow rate by the time elapsed:\n    $$ V_{added} = R_{net} \\times t = 3 \\, \\text{L/min} \\times 10 \\, \\text{min} = 30 \\, \\text{liters} $$\n\n4.  **Calculate Final Volume**:\n    Add the volume added to the initial volume:\n    $$ V_{final} = V_0 + V_{added} = 30 \\, \\text{L} + 30 \\, \\text{L} = 60 \\, \\text{liters} $$\n\n### Conclusion / Summary\nAfter 10 minutes, the water tank will have **60 liters**.",
+      "latency_sec": 56.27,
+      "tokens": 422,
+      "tokens_per_sec": 7.5,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "general_factual",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "acad_01_cnn_vs_vit",
+      "category": "academic_research",
+      "type": "academic_explanation",
+      "question": "What are the core architectural differences between Convolutional Neural Networks (CNNs) and Vision Transformers (ViTs) for image classification?",
+      "response": "### Core Answer\nThe primary architectural difference lies in **how they process spatial information**: CNNs use **local receptive fields** with sliding window filters to capture hierarchical features, while ViTs use **global attention mechanisms** that treat the entire image as a sequence of patches, allowing for explicit modeling of long-range dependencies.\n\n---\n\n### Step-by-Step Analysis / Derivation\n\n#### 1. Core Problem / Question Identification\nThe user is asking for a comparison between two dominant architectures in computer vision: Convolutional Neural Networks (CNNs) and Vision Transformers (ViTs). The goal is to identify the fundamental structural distinctions that lead to their different performance characteristics, particularly regarding feature extraction and dependency modeling.\n\n#### 2. Fundamental Principles or Mechanism\n*   **CNNs:** Rely on convolutional layers with kernel sizes ($3 \\times 3$, $5 \\times 5$, etc.) and stride/padding operations. This creates a local receptive field where each neuron only sees a small patch of the input image. The architecture naturally enforces translation invariance through pooling layers.\n*   **ViTs:** Treat the image as a fixed-size sequence (e.g., $N \\times N$ patches). Each patch is flattened into a token, and the entire sequence is fed into a Transformer encoder. This allows the model to attend to any part of the image relative to any other part, explicitly modeling global dependencies without relying on local neighborhood assumptions.\n\n#### 3. Step-by-Step Analysis / Derivation\nTo understand the differences, we must analyze how each architecture processes data:\n\n*   **Feature Extraction Mechanism:**\n    *   **CNNs:** Use convolutional kernels to extract low-level features (edges) and high-level features (shapes). The receptive field grows exponentially with depth ($2^d$), allowing deep networks to see large contexts. However, this comes at the cost of computational efficiency per parameter compared to ViTs.\n    *   **ViTs:** Do not use convolutional kernels for feature extraction in the same way. Instead, they rely on self-attention layers. The attention mechanism calculates a weighted sum of all other tokens based on their relevance to the current token. This allows the model to directly learn relationships between distant patches (e.g., the relationship between an object and its background).\n\n*   **Handling Spatial Dimensions:**\n    *   **CNNs:** Operate on spatial grids ($H \\times W$). The input is typically processed in a sliding window fashion, which makes it difficult to capture global context unless explicitly augmented or handled via specific techniques like Global Average Pooling.\n    *   **ViTs:** Operate on a flattened sequence of tokens. The spatial dimensions are converted into the sequence length ($N = H \\times W$). This transformation allows the model to inherently handle arbitrary aspect ratios and sizes by simply changing the token count, whereas CNNs require resizing or specific padding strategies.\n\n*   **Computational Complexity:**\n    *   **CNNs:** Generally more computationally efficient per parameter because they share weights across the entire image via convolutional kernels. The number of parameters scales roughly with $H \\times W$.\n    *   **ViTs:** Have a higher computational cost due to the quadratic complexity of self-attention ($O(N^2)$), where $N$ is the number of patches. However, modern implementations often use sparse attention or efficient attention mechanisms (like FlashAttention) to mitigate this.\n\n#### 4. Conclusion / Summary\nThe core architectural difference is that **CNNs are local and hierarchical**, utilizing convolutional filters to build a deep feature hierarchy efficiently, while **ViTs are global and sequence-based**, utilizing self-attention to explicitly model long-range dependencies across the entire",
+      "latency_sec": 90.78,
+      "tokens": 724,
+      "tokens_per_sec": 8.0,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "academic",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "acad_02_metrics_precision_recall",
+      "category": "academic_research",
+      "type": "academic_explanation",
+      "question": "Explain the difference between Precision and Recall in classification models.",
+      "response": "In classification models, **Precision** and **Recall** are two fundamental metrics used to evaluate how well a model performs on positive examples (e.g., identifying emails marked as spam). They measure different aspects of performance depending on whether the goal is to maximize accuracy or minimize false negatives.\n\n### 1. Precision\n**Definition:** Precision measures the ability of the model to identify true positives without including too many false positives. It answers the question: *\"Of all the items the model predicted as positive, how many were actually positive?\"*\n\n*   **Formula:**\n    $$ \\text{Precision} = \\frac{\\text{True Positives (TP)}}{\\text{True Positives (TP)} + \\text{False Positives (FP)}} $$\n*   **Interpretation:** A high precision means the model is \"purer.\" If a model has 90% precision, it means that when it says something is positive, there is a 90% chance it is actually correct.\n*   **Use Case:** This metric is crucial when **false positives** are costly or undesirable (e.g., an email filter sending a legitimate user's message to their inbox).\n\n### 2. Recall\n**Definition:** Recall measures the ability of the model to identify all actual positive examples without missing any. It answers the question: *\"Of all the items that were actually positive, how many did the model successfully find?\"*\n\n*   **Formula:**\n    $$ \\text{Recall} = \\frac{\\text{True Positives (TP)}}{\\text{True Positives (TP)} + \\text{False Negatives (FN)}} $$\n*   **Interpretation:** A high recall means the model is \"complete.\" If a model has 90% recall, it means that 90% of all actual positive cases were found by the model.\n*   **Use Case:** This metric is crucial when **false negatives** (missing a positive case) are dangerous or unacceptable (e.g., a medical diagnosis system failing to detect a disease).\n\n### Key Differences Summary\n\n| Feature | Precision | Recall |\n| :--- | :--- | :--- |\n| **Focus** | Minimizing false alarms. | Minimizing missed detections. |\n| **Denominator** | TP + FP (Total predicted positives) | TP + FN (Total actual positives) |\n| **Ideal Scenario** | When you want to avoid saying something is positive when it",
+      "latency_sec": 58.56,
+      "tokens": 480,
+      "tokens_per_sec": 8.2,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "general_factual",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "acad_03_ablation_study_purpose",
+      "category": "academic_research",
+      "type": "academic_explanation",
+      "question": "What is the purpose of an ablation study in a machine learning paper?",
+      "response": "An **ablation study** in a machine learning paper serves to isolate and evaluate the contribution of specific components, features, or techniques within a model by systematically removing or modifying them. Its primary purpose is to provide empirical evidence that each element plays a necessary role in achieving the reported performance.\n\nHere is the systematic breakdown of its purpose:\n\n### 1. Core Problem / Question Identification\nThe central question an ablation study answers is: **\"Does this specific component, feature, or architectural change directly cause the improvement in model performance observed in the main results?\"** Without this study, it is impossible to distinguish between the effect of the proposed method and the effect of other factors (e.g., data quality, hyperparameters, or random initialization).\n\n### 2. Fundamental Principles or Mechanism\nThe mechanism relies on **counterfactual reasoning**:\n*   If a model achieves high accuracy using a specific technique $X$, but performance drops significantly when $X$ is removed ($X'$), then $X$ is likely the causal factor for that improvement.\n*   If removing a component does not degrade performance, it suggests either the component was redundant or its removal did not hinder the model's ability to learn other critical features.\n\n### 3. Step-by-Step Analysis / Derivation\nThe process typically follows these steps:\n1.  **Baseline Establishment**: Define a baseline model (e.g., a simpler version of the proposed architecture, a random initialization, or a standard algorithm).\n2.  **Systematic Removal**: Iteratively remove one element at a time from the full model while keeping all others constant. Common removals include:\n    *   Removing a specific layer or module (e.g., removing attention mechanisms in an Transformer).\n    *   Removing a specific feature extraction technique (e.g., replacing CNN with RNN).\n    *   Removing a regularization term (e.g., dropout, weight decay).\n3.  **Performance Comparison**: Measure the performance of each modified model against the baseline and the original full model.\n4.  **Interpretation**: Analyze the results to determine if the removal caused a significant drop in metrics, thereby confirming the necessity of that component.\n\n### 4. Conclusion / Summary\nThe conclusion drawn from an ablation study is definitive regarding the **necessity** and **contribution** of specific parts of the solution. It validates the authors' claims by demonstrating that their proposed method works *because* of its unique components, rather than relying on coincidental performance or overfitting to other factors.\n\n**Example:**\nIf a paper proposes a new attention mechanism and reports a 10% accuracy improvement, an ablation study might show:\n*   Model with Attention: 95% accuracy.\n*   Model without Attention (but with the rest of the architecture): 82% accuracy.\n*   *Conclusion:* The 13% gap is directly attributable to the attention mechanism, not just general improvements in data preprocessing or model depth.",
+      "latency_sec": 71.24,
+      "tokens": 572,
+      "tokens_per_sec": 8.0,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "academic",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "doc_01_absent_revenue",
+      "category": "document_qa",
+      "type": "abstention",
+      "question": "According to the uploaded documents, what was the company's Q3 revenue in 2012?",
+      "response": "I cannot access any documents you have uploaded to this conversation, as I do not have the capability to view or process external files unless they are pasted directly into the chat. Therefore, I do not know which company's data you are referring to and cannot determine its Q3 revenue for 2012 from your uploads.\n\nIf you can paste the relevant text from the documents here, I will be happy to analyze them and provide that specific information.",
+      "latency_sec": 11.95,
+      "tokens": 90,
+      "tokens_per_sec": 7.5,
+      "is_correct": false,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "conversational",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "doc_02_fake_paper_doi",
+      "category": "document_qa",
+      "type": "abstention",
+      "question": "Summarize the experimental methodology of the study with DOI 10.1234/fake.doi.2024.001.",
+      "response": "I cannot provide a summary of the experimental methodology for the study with DOI **10.1234/fake.doi.2024.001**.\n\nThis DOI is not registered in any major scholarly database (such as Crossref, PubMed, or Scopus). It appears to be a fabricated or placeholder identifier. As an AI assistant, I must adhere to the following rules:\n*   **Do not invent facts:** I cannot fabricate authors, journal titles, publication dates, or specific experimental details for a non-existent paper.\n*   **Admit uncertainty:** Since this reference does not exist in my knowledge base, I cannot confirm its existence or provide information about it.\n\nIf you have a real DOI (e.g., from a legitimate academic journal), please provide the correct one, and I will be happy to summarize the methodology for that specific study.",
+      "latency_sec": 32.47,
+      "tokens": 174,
+      "tokens_per_sec": 5.4,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "unverified",
+        "is_factual": true,
+        "category": "academic",
+        "tier": 2,
+        "tier_name": "academic_reference_check",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [
+          "Supplied DOI is unverified in academic registries."
+        ],
+        "disclaimer": "The identifier '10.1234/fake.doi.2024.001' could not be validated in trusted registries. To prevent citing fabricated research, this DOI is unverified.",
+        "quotation_check": {
+          "has_quotes": false,
+          "quotes_count": 0,
+          "all_quotes_verified": true,
+          "details": []
+        },
+        "appropriate_abstention": false
+      }
+    },
+    {
+      "id": "doc_03_absent_employee_count",
+      "category": "document_qa",
+      "type": "abstention",
+      "question": "Based on the attached contract, how many total employees work in the engineering division?",
+      "response": "I cannot see any attachments. Please upload the contract file so I can examine it and determine the number of employees in the engineering division based on its specific terms.\n\nOnce you provide the document, I will analyze it to give you a direct answer and explain how that figure is derived from the text.",
+      "latency_sec": 8.25,
+      "tokens": 59,
+      "tokens_per_sec": 7.2,
+      "is_correct": false,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "conversational",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "quote_01_dickens_two_cities",
+      "category": "exact_quotations",
+      "type": "quote",
+      "question": "Quote the opening sentence of Charles Dickens' novel 'A Tale of Two Cities'.",
+      "response": "The opening sentence of Charles Dickens' novel *A Tale of Two Cities* is:\n\n**\"It was the best of times, it was the worst of times...\"**\n\nThis famous line serves as a thematic anchor for the novel's exploration of contrasting social conditions in London during the French Revolution.",
+      "latency_sec": 8.01,
+      "tokens": 58,
+      "tokens_per_sec": 7.2,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "unverified",
+        "is_factual": true,
+        "category": "quote",
+        "tier": 4,
+        "tier_name": "general_knowledge",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [
+          "Claim generated from general model knowledge; no primary source consulted."
+        ],
+        "disclaimer": "This explanation is based on general model knowledge and has not been independently verified.",
+        "quotation_check": {
+          "has_quotes": true,
+          "quotes_count": 1,
+          "all_quotes_verified": false,
+          "details": [
+            {
+              "quote": "It was the best of times, it was the worst of times...",
+              "overlap_score": 0.0,
+              "verified": false
+            }
+          ]
+        },
+        "appropriate_abstention": false
+      }
+    },
+    {
+      "id": "quote_02_armstrong_moon",
+      "category": "exact_quotations",
+      "type": "quote",
+      "question": "Quote the famous words spoken by Neil Armstrong when stepping onto the Moon.",
+      "response": "Neil Armstrong's most famous words spoken when he stepped onto the lunar surface on July 20, 1969, were:\n\n**\"That's one small step for [a] man, one giant leap for mankind.\"**\n\nHe also famously added, **\"We've gone a little further than we expected,\"** shortly after his initial statement.",
+      "latency_sec": 9.41,
+      "tokens": 69,
+      "tokens_per_sec": 7.3,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "unverified",
+        "is_factual": true,
+        "category": "quote",
+        "tier": 4,
+        "tier_name": "general_knowledge",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [
+          "Claim generated from general model knowledge; no primary source consulted."
+        ],
+        "disclaimer": "This explanation is based on general model knowledge and has not been independently verified.",
+        "quotation_check": {
+          "has_quotes": true,
+          "quotes_count": 2,
+          "all_quotes_verified": false,
+          "details": [
+            {
+              "quote": "That's one small step for [a] man, one giant leap for mankind.",
+              "overlap_score": 0.0,
+              "verified": false
+            },
+            {
+              "quote": "We've gone a little further than we expected,",
+              "overlap_score": 0.0,
+              "verified": false
+            }
+          ]
+        },
+        "appropriate_abstention": false
+      }
+    },
+    {
+      "id": "quote_03_luke_24_46_kjv",
+      "category": "exact_quotations",
+      "type": "quote",
+      "question": "Quote Luke 24:46 from the KJV Bible.",
+      "response": "\"And said unto them, Thus it is written, and thus it behoved Christ to suffer, and to rise from the dead the third day:\"",
+      "latency_sec": 4.66,
+      "tokens": 29,
+      "tokens_per_sec": 6.2,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "verified",
+        "is_factual": true,
+        "category": "bible",
+        "tier": 2,
+        "tier_name": "trusted_scripture_reference",
+        "sources_consulted": [
+          {
+            "type": "trusted_scripture",
+            "title": "luke 24:46 (King James Version (KJV))",
+            "text": "And said unto them, Thus it is written, and thus it behoved Christ to suffer, and to rise from the dead the third day:",
+            "is_copyrighted": false
+          }
+        ],
+        "verified_claims": [
+          "Verified against luke 24:46 (King James Version (KJV))"
+        ],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": true,
+          "quotes_count": 1,
+          "all_quotes_verified": true,
+          "details": [
+            {
+              "quote": "And said unto them, Thus it is written, and thus it behoved Christ to suffer, and to rise from the dead the third day:",
+              "overlap_score": 1.0,
+              "verified": true
+            }
+          ]
+        },
+        "appropriate_abstention": false
+      }
+    },
+    {
+      "id": "quote_04_declaration_of_independence",
+      "category": "exact_quotations",
+      "type": "quote",
+      "question": "Quote the famous first line of the United States Declaration of Independence.",
+      "response": "The famous first line of the United States Declaration of Independence is:\n\n**\"We hold these truths to be self-evident, that all men are created equal.\"**\n\n*(Note: The full opening sentence reads: \"When in the Course of human events it becomes necessary for one people to dissolve the political bands which have connected them with this country...\" However, the most widely recognized and quoted phrase is the second line above.)*",
+      "latency_sec": 11.46,
+      "tokens": 86,
+      "tokens_per_sec": 7.5,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "unverified",
+        "is_factual": true,
+        "category": "quote",
+        "tier": 4,
+        "tier_name": "general_knowledge",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [
+          "Claim generated from general model knowledge; no primary source consulted."
+        ],
+        "disclaimer": "This explanation is based on general model knowledge and has not been independently verified.",
+        "quotation_check": {
+          "has_quotes": true,
+          "quotes_count": 2,
+          "all_quotes_verified": false,
+          "details": [
+            {
+              "quote": "We hold these truths to be self-evident, that all men are created equal.",
+              "overlap_score": 0.0,
+              "verified": false
+            },
+            {
+              "quote": "When in the Course of human events it becomes necessary for one people to dissolve the political bands which have connected them with this country...",
+              "overlap_score": 0.0,
+              "verified": false
+            }
+          ]
+        },
+        "appropriate_abstention": false
+      }
+    },
+    {
+      "id": "fp_01_einstein_telephone",
+      "category": "false_premise",
+      "type": "correct_premise",
+      "question": "Why did Albert Einstein invent the telephone in 1952?",
+      "response": "There is a significant factual error in your question: **Albert Einstein never invented the telephone in 1952.**\n\nHere are the accurate facts regarding both the telephone and Einstein's contributions around that time:\n\n1.  **The Telephone**: The telephone was invented by **Alexander Graham Bell** (along with Elisha Gray) in **1876**, not 1952. It is one of the most important inventions of the 19th century, developed independently by Bell and Gray before they could meet to discuss their invention.\n2.  **Albert Einstein**: Albert Einstein was a theoretical physicist known for his work on relativity (special and general) and the photoelectric effect. He did not invent any telecommunication device in 1952. In fact, he is often described as being \"bored\" by telephone technology because it interfered with his work in quantum mechanics; he famously said, \"If I were to invent a telephone, I would make sure that the receiver was made of copper.\"\n\n**Conclusion:**\nThe premise of your question is incorrect. Albert Einstein did not invent the telephone, and he certainly did not do so in 1952. The telephone was invented by Alexander Graham Bell in 1876.",
+      "latency_sec": 31.42,
+      "tokens": 249,
+      "tokens_per_sec": 7.9,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "conversational",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "fp_02_france_aztec_war",
+      "category": "false_premise",
+      "type": "correct_premise",
+      "question": "What treaty ended the military war between France and the Aztec Empire in 1750?",
+      "response": "The military conflict between the French and the Aztec Empire was not a continuous war that lasted until 1750, nor did it end with a single treaty. Instead, it was a series of intermittent wars fought primarily between **1692 and 1714**. The last major military confrontation occurred in **1714** at the Battle of San Juan de los Lagos, where the French were decisively defeated by the Aztecs.\n\nFollowing this defeat, the French government formally recognized the Aztec Empire's sovereignty and withdrew its forces from Mexico. This conclusion was confirmed through a diplomatic agreement signed in **1720**. This treaty is known as the **Treaty of Fontainebleau** (or simply the Treaty of 1720).\n\nTherefore, while the war concluded around 1714, the formal treaty that ended the conflict and recognized the status quo was signed in **1720**.",
+      "latency_sec": 50.76,
+      "tokens": 190,
+      "tokens_per_sec": 3.7,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "conversational",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "fp_03_mercury_moons",
+      "category": "false_premise",
+      "type": "direct_fact",
+      "question": "How many moons does the planet Mercury have in orbit?",
+      "response": "Mercury has **zero** moons in orbit.\n\nWhile it is often confused with Earth (which has one moon) and Venus (which also has none), Mercury is the only planet in our solar system that lacks a natural satellite. All of its moons belong to other planets:\n- The most famous is **Io**, Jupiter's largest moon.\n- Another is **Phoebe**, Saturn's dark, retrograde moon.\n- **Rhea** and **Enceladus** are also part of the major satellite systems of their respective giant planets.\n\nTherefore, Mercury remains isolated in its own orbit with no moons associated with it.",
+      "latency_sec": 16.35,
+      "tokens": 126,
+      "tokens_per_sec": 7.7,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "conversational",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "fp_04_queen_victoria_magna_carta",
+      "category": "false_premise",
+      "type": "correct_premise",
+      "question": "Why did Queen Victoria sign the Magna Carta in London?",
+      "response": "Queen Victoria did not sign the Magna Carta in London because she never existed at that time. The Magna Carta was signed on **June 15, 1215**, during the reign of King John I of England. Queen Victoria reigned from **1837 to 1901**.\n\nThe confusion likely stems from a mix-up between two different historical events:\n1.  **Magna Carta**: Signed in 1215 by King John, establishing early principles of limited royal power and the rule of law.\n2.  **Victoria's Coronation**: Queen Victoria was crowned on **May 21, 1837**, at Westminster Abbey in London.\n\nThere is no historical record of a \"Queen Victoria signing the Magna Carta.\" The event you are asking about belongs to the 13th century, while Victoria's reign began over 700 years later.",
+      "latency_sec": 39.63,
+      "tokens": 177,
+      "tokens_per_sec": 4.5,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "historical",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "unc_01_future_stock_price",
+      "category": "unanswerable",
+      "type": "abstention",
+      "question": "What will be the exact closing price of Apple stock on December 31, 2035?",
+      "response": "I cannot provide an exact closing price for Apple stock on December 31, 2035.\n\n**Reasoning:**\nThe date you specified (December 31, 2035) is in the future relative to my current training data and real-time access. While I can predict general market trends based on historical patterns and fundamental analysis, I cannot determine a specific numerical price for a day that has not yet occurred. Stock prices are influenced by countless unpredictable variables, including:\n*   Unexpected global events (political shifts, pandemics, technological breakthroughs).\n*   Company-specific news or earnings reports released after the current date.\n*   Market sentiment and liquidity conditions that evolve over time.\n\nAttempting to calculate a precise number would be speculative and potentially misleading, violating the rule against inventing facts or making specific claims about future data points. If you are interested in projecting potential price ranges based on current models or discussing historical performance leading up to 2035, I can provide general information on that topic.",
+      "latency_sec": 24.77,
+      "tokens": 197,
+      "tokens_per_sec": 8.0,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "conversational",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "unc_02_pharaoh_cheops_secret",
+      "category": "unanswerable",
+      "type": "abstention",
+      "question": "What was the exact personal secret whispered into Pharaoh Cheops' ear on his 30th birthday?",
+      "response": "There is no historical record of a specific \"personal secret\" being whispered into the ear of Pharaoh Cheops (Cheops) on his 30th birthday.\n\nThe phrasing in your question likely stems from a confusion between two different events:\n\n1.  **The Story of the Serpent's Tail:** In Egyptian mythology, the god Anubis steals the heart of the young Pharaoh Khufu (Cheops' father) to make it his own. However, this is an ancient myth involving a specific heart, not a secret whispered on a birthday.\n2.  **The \"Secret\" of the Birthday:** While there are many myths about birthdays and wishes in Egyptian culture, there is no account of a single, universally known secret being revealed to Cheops specifically at age thirty.\n\nIt is important to note that ancient Egyptian records (such as those found on the Rhind Mathematical Papyrus or the Ebers Papyrus) focus on mathematics, astronomy, medicine, and religious rituals rather than personal confidences between pharaohs and specific individuals.\n\n**Conclusion:**\nNo such secret exists in history. It appears to be a misconception or a misremembered story about the theft of Khufu's heart by Anubis, which was never delivered as a birthday wish to Cheops.",
+      "latency_sec": 31.12,
+      "tokens": 258,
+      "tokens_per_sec": 8.3,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "conversational",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "unc_03_agent_omega_name",
+      "category": "unanswerable",
+      "type": "abstention",
+      "question": "What is the real home address of the undercover operative Agent Omega-9?",
+      "response": "There is no official record of an agent named **Agent Omega-9** in any known intelligence database, fictional universe, or historical event.\n\nAs an AI trained on general knowledge up to my cutoff, I cannot access classified government records, unpublished documents, or private databases that would contain such specific details about a real-world operative with this designation. The name \"Omega-9\" is not associated with any verified case study, public figure, or established conspiracy theory in the information available to me.\n\nIf you are referring to a specific fictional character from a book, movie, video game, or TV show, please provide that context so I can help identify their actual home address within that story's universe.",
+      "latency_sec": 25.98,
+      "tokens": 139,
+      "tokens_per_sec": 5.3,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "general_factual",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "unc_04_world_cup_2050",
+      "category": "unanswerable",
+      "type": "abstention",
+      "question": "Which national team will win the FIFA World Cup in the year 2050?",
+      "response": "It is impossible to predict which national team will win the FIFA World Cup in 2050.\n\nThe FIFA World Cup is an international sporting event held every four years, and its results are determined by a combination of player skill, coaching decisions, tactical strategies, historical performance, and chance during the tournament itself. No one can accurately forecast future outcomes with certainty.\n\nWhile there may be patterns in past tournaments (such as strong performances by certain nations over several decades), these do not guarantee future winners. Factors that could influence results include:\n*   **Tactical Evolution:** Changes in football strategies and player development.\n*   **Player Availability:** Retirements, injuries, or the acquisition of new talent.\n*   **Socio-political Contexts:** Differences in resources, infrastructure, and global competition levels between nations.\n\nTherefore, any specific prediction for 2050 would be speculative at best and factually incorrect.",
+      "latency_sec": 19.56,
+      "tokens": 179,
+      "tokens_per_sec": 9.1,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "conversational",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "creat_01_haiku_autumn",
+      "category": "creative",
+      "type": "creative",
+      "question": "Write a short haiku about autumn leaves.",
+      "response": "Falling in warm colors,\nGolden paths on the ground,\nSilent whispering wind.",
+      "latency_sec": 19.67,
+      "tokens": 18,
+      "tokens_per_sec": 0.9,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "conversational",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "creat_02_mystery_opening",
+      "category": "creative",
+      "type": "creative",
+      "question": "Write a two-sentence mystery opening hook.",
+      "response": "The rain has been falling on the Victorian manor for three days without a single drop hitting the front door; yet, every night it seems to pour exactly where it shouldn't. Tonight, when Elias finally answers his door, the hinges have long since rusted shut, and he finds himself staring at a mirror that reflects nothing but his own terrified reflection.",
+      "latency_sec": 7.98,
+      "tokens": 71,
+      "tokens_per_sec": 8.9,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "conversational",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    },
+    {
+      "id": "creat_03_code_cooking_metaphor",
+      "category": "creative",
+      "type": "creative",
+      "question": "Write a short poetic metaphor comparing software compilation to cooking.",
+      "response": "The compiler is the **chef**, wielding a precise knife and whisk to transform raw ingredients of code into a cohesive meal. Just as flour must be sifted to remove lumps, variables must be organized to avoid chaos; the oven sets the temperature, deciding whether to bake in slow heat or fry with speed. If left unattended, the dish will burn or remain undercooked\u2014just as an unoptimized program might crash with errors or fail to run. In the end, the software is not merely a pile of instructions, but a **delicious, ready-to-eat feast**, waiting for users to taste its flavor.",
+      "latency_sec": 13.14,
+      "tokens": 125,
+      "tokens_per_sec": 9.5,
+      "is_correct": true,
+      "has_forbidden_hallucination": false,
+      "verification": {
+        "status": "none",
+        "is_factual": false,
+        "category": "conversational",
+        "sources_consulted": [],
+        "verified_claims": [],
+        "unverified_claims": [],
+        "disclaimer": null,
+        "quotation_check": {
+          "has_quotes": false,
+          "verified": true
+        }
+      }
+    }
+  ]
+}

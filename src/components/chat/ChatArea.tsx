@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { ChevronDown, FileText, X, FileUp } from 'lucide-react';
+import { ChevronDown, FileText, X, FileUp, Globe, Compass, Loader2, GitBranch } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { WelcomeScreen } from './WelcomeScreen';
 import { MessageItem } from '../message/MessageItem';
@@ -17,6 +17,7 @@ export const ChatArea: React.FC = () => {
     stopGeneration,
     regenerateLastResponse,
     settings,
+    activeStreamStatus,
   } = useApp();
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -24,29 +25,56 @@ export const ChatArea: React.FC = () => {
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [isDragOverChat, setIsDragOverChat] = useState(false);
 
-  // Auto-scroll on new messages or during generation
+  // "Follow the stream" mode. True while the user is at the bottom. Scrolling up turns it off
+  // so arriving tokens don't yank the view back down; reaching the bottom again turns it on.
+  const stickToBottomRef = useRef(true);
+  const lastScrollTopRef = useRef(0);
+
   const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
-    messagesEndRef.current?.scrollIntoView({ behavior });
+    const el = scrollContainerRef.current;
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior });
   };
 
+  // Opening a different conversation: start following the bottom again.
+  const firstMessageId = messages[0]?.id;
   useEffect(() => {
-    // Only auto scroll if user is already near bottom
-    if (scrollContainerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
-      const isNearBottom = scrollHeight - scrollTop - clientHeight < 150;
-      if (isNearBottom || isGenerating) {
-        scrollToBottom(isGenerating ? 'auto' : 'smooth');
-      }
+    stickToBottomRef.current = true;
+  }, [firstMessageId]);
+
+  const prevMessageCountRef = useRef(0);
+  useEffect(() => {
+    // Sending a message always jumps to the bottom. A send adds the user message and an empty
+    // assistant message in one update, so look at everything that was just added.
+    const prevCount = prevMessageCountRef.current;
+    prevMessageCountRef.current = messages.length;
+    if (messages.length > prevCount && messages.slice(prevCount).some((m) => m.role === 'user')) {
+      stickToBottomRef.current = true;
+    }
+    if (stickToBottomRef.current) {
+      scrollToBottom(isGenerating ? 'auto' : 'smooth');
     }
   }, [messages, isGenerating]);
 
-  // Monitor scroll position to show/hide the scroll-to-bottom button
+  // Track where the user is: show/hide the scroll-to-bottom button and decide whether to follow.
   const handleScroll = () => {
-    if (scrollContainerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
-      const isScrolledUp = scrollHeight - scrollTop - clientHeight > 200;
-      setShowScrollButton(isScrolledUp);
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const { scrollTop, scrollHeight, clientHeight } = el;
+    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+    const movedUp = scrollTop < lastScrollTopRef.current - 1;
+    lastScrollTopRef.current = scrollTop;
+
+    if (distanceFromBottom <= 24) {
+      stickToBottomRef.current = true; // back at the bottom: follow the stream again
+    } else if (movedUp) {
+      stickToBottomRef.current = false; // the user scrolled up: stop following
     }
+    setShowScrollButton(distanceFromBottom > 200);
+  };
+
+  // Wheel-up is the earliest signal the user wants out, before the scroll event even fires.
+  const handleWheel = (e: React.WheelEvent) => {
+    if (e.deltaY < 0) stickToBottomRef.current = false;
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -93,7 +121,7 @@ export const ChatArea: React.FC = () => {
       {/* Active Attached Documents Banner */}
       {documents.length > 0 && (
         <div className="border-b border-moso-800/60 bg-moso-900/60 backdrop-blur-sm px-3 py-2 sm:px-6 md:px-8 z-10 shrink-0">
-          <div className="w-full max-w-[880px] lg:max-w-[920px] mx-auto flex items-center justify-between text-xs gap-2 sm:gap-3">
+          <div className="w-full max-w-[760px] mx-auto flex items-center justify-between text-xs gap-2 sm:gap-3">
             <div className="flex items-center gap-1.5 sm:gap-2 text-moso-300 font-medium shrink-0">
               <FileText className="h-3.5 w-3.5 text-moso-accent" />
               <span className="hidden sm:inline">Active Document Context ({documents.length}):</span>
@@ -133,12 +161,20 @@ export const ChatArea: React.FC = () => {
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto px-3 sm:px-6 md:px-8 py-3 sm:py-4 space-y-2"
+        onWheel={handleWheel}
+        className="flex-1 flex flex-col overflow-y-auto px-3 sm:px-6 md:px-8 py-3 sm:py-4"
       >
         {messages.length === 0 ? (
-          <WelcomeScreen onSelectPrompt={(prompt) => sendMessage(prompt)} />
+          <WelcomeScreen onSelectPrompt={(prompt) => sendMessage(prompt)}>
+            <ChatInput
+              variant="hero"
+              onSendMessage={sendMessage}
+              isGenerating={isGenerating}
+              onStopGeneration={stopGeneration}
+            />
+          </WelcomeScreen>
         ) : (
-          <div className="w-full max-w-[880px] lg:max-w-[920px] mx-auto space-y-3 sm:space-y-4">
+          <div className="w-full max-w-[760px] mx-auto space-y-1 sm:space-y-2">
             {messages.map((message, index) => {
               const isLatest = index === messages.length - 1;
               return (
@@ -151,6 +187,25 @@ export const ChatArea: React.FC = () => {
                 />
               );
             })}
+
+            {/* Live Web & Tool Activity Indicator */}
+            {isGenerating && activeStreamStatus && (
+              <div className="flex items-center gap-2.5 py-1 text-[13px] text-moso-400 w-fit max-w-full animate-fade-in">
+                {activeStreamStatus.tool === 'github_inspect' ? (
+                  <GitBranch className="h-4 w-4 text-purple-400 shrink-0 animate-pulse" />
+                ) : activeStreamStatus.tool === 'web_search' ? (
+                  <Globe className="h-4 w-4 text-accent-400 shrink-0 animate-spin" />
+                ) : activeStreamStatus.tool === 'web_fetch' ? (
+                  <Compass className="h-4 w-4 text-sky-400 shrink-0 animate-pulse" />
+                ) : (
+                  <Loader2 className="h-4 w-4 text-accent-400 shrink-0 animate-spin" />
+                )}
+                <span className="font-medium text-moso-200 truncate">
+                  {activeStreamStatus.message}
+                </span>
+              </div>
+            )}
+
             <div ref={messagesEndRef} className="h-4" />
           </div>
         )}
@@ -158,12 +213,15 @@ export const ChatArea: React.FC = () => {
 
       {/* Floating Scroll-to-Bottom Button */}
       {showScrollButton && (
-        <div className="absolute bottom-20 sm:bottom-24 right-4 sm:right-8 z-20 animate-fade-in">
+        <div className="absolute bottom-32 sm:bottom-36 right-4 sm:right-8 z-20 animate-fade-in">
           <Button
             variant="secondary"
             size="icon-sm"
-            onClick={() => scrollToBottom('smooth')}
-            className="rounded-full shadow-lg bg-moso-850 hover:bg-moso-800 border-moso-700"
+            onClick={() => {
+              stickToBottomRef.current = true;
+              scrollToBottom('smooth');
+            }}
+            className="rounded-full shadow-md bg-moso-900 hover:bg-moso-850 border-moso-750"
             aria-label="Scroll to bottom"
           >
             <ChevronDown className="h-4 w-4 text-moso-200" />
@@ -171,12 +229,14 @@ export const ChatArea: React.FC = () => {
         </div>
       )}
 
-      {/* Persistent Chat Input at bottom */}
-      <ChatInput
-        onSendMessage={sendMessage}
-        isGenerating={isGenerating}
-        onStopGeneration={stopGeneration}
-      />
+      {/* Composer pinned at the bottom once a conversation has started */}
+      {messages.length > 0 && (
+        <ChatInput
+          onSendMessage={sendMessage}
+          isGenerating={isGenerating}
+          onStopGeneration={stopGeneration}
+        />
+      )}
     </div>
   );
 };

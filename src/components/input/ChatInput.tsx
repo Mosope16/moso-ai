@@ -4,11 +4,12 @@ import {
   Square,
   Paperclip,
   Plus,
-  Sparkles,
   X,
   AlertCircle,
   Loader2,
   FileUp,
+  Globe,
+  ChevronDown,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { cn } from '../../utils/cn';
@@ -17,6 +18,8 @@ interface ChatInputProps {
   onSendMessage: (message: string) => void;
   isGenerating: boolean;
   onStopGeneration: () => void;
+  /** 'hero' = centered on the empty screen, 'dock' = pinned under a conversation */
+  variant?: 'hero' | 'dock';
 }
 
 function formatFileSize(bytes: number): string {
@@ -29,6 +32,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
   isGenerating,
   onStopGeneration,
+  variant = 'dock',
 }) => {
   const {
     selectedModel,
@@ -40,22 +44,27 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     removeDocument,
     clearUploadError,
     openSettings,
+    webSearchEnabled,
+    setWebSearchEnabled,
   } = useApp();
 
   const [input, setInput] = useState('');
   const [isDraggingOver, setIsDraggingOver] = useState(false);
-  const [isMultiline, setIsMultiline] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const currentModel = availableModels.find((m) => m.id === selectedModel);
 
-  // Auto-resize textarea height and determine multiline status
+  // Start typing right away on desktop (skip on touch screens so the keyboard doesn't pop up)
+  useEffect(() => {
+    if (window.matchMedia('(pointer: fine)').matches) textareaRef.current?.focus();
+  }, []);
+
+  // Auto-resize textarea height
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
       const scrollHeight = textareaRef.current.scrollHeight;
-      setIsMultiline(scrollHeight > 34);
       textareaRef.current.style.height = `${Math.min(scrollHeight, 180)}px`;
     }
   }, [input]);
@@ -76,7 +85,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     if (!trimmed || isGenerating) return;
     onSendMessage(trimmed);
     setInput('');
-    setIsMultiline(false);
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
     }
@@ -118,7 +126,14 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const hasAttachments = documents.length > 0 || isUploadingDocument;
 
   return (
-    <div className="w-full max-w-[820px] lg:max-w-[860px] mx-auto px-3 sm:px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-1 select-none">
+    <div
+      className={cn(
+        'w-full mx-auto select-none',
+        variant === 'hero'
+          ? 'max-w-[720px]'
+          : 'max-w-[760px] px-3 sm:px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-1'
+      )}
+    >
       {/* Upload Error Banner */}
       {uploadError && (
         <div className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300 mb-2 shadow-sm animate-fade-in">
@@ -136,32 +151,18 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         </div>
       )}
 
-      {/* AI Mistakes Disclaimer: Centered directly above the minimized typing pill bar */}
-      <div className="text-center pb-2 select-none">
-        <p className="text-[11.5px] sm:text-[12px] text-moso-400/80 font-normal tracking-tight inline-flex items-center justify-center gap-1">
-          <span>Moso AI can make mistakes.</span>
-          <button
-            type="button"
-            onClick={openSettings}
-            className="underline underline-offset-2 hover:text-moso-200 transition-colors cursor-pointer"
-          >
-            Check important info.
-          </button>
-        </p>
-      </div>
-
-      {/* Minimized Pill Typing Bar */}
+      {/* Composer */}
       <div
         onDragOver={handleDragOver}
         onDragEnter={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         className={cn(
-          'relative bg-moso-900/95 border border-moso-750/80 shadow-xl transition-all duration-200',
-          isMultiline || hasAttachments ? 'rounded-2xl sm:rounded-3xl' : 'rounded-full',
+          'relative rounded-[22px] bg-moso-900 border text-left transition-colors duration-150',
+          'shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_28px_rgb(0_0_0/0.07)]',
           isDraggingOver
-            ? 'border-emerald-500 border-dashed ring-2 ring-emerald-500/40 bg-moso-900'
-            : 'focus-within:border-emerald-500/50 focus-within:ring-1 focus-within:ring-emerald-500/25'
+            ? 'border-accent-500 border-dashed ring-2 ring-accent-500/30'
+            : 'border-moso-750 focus-within:border-moso-600'
         )}
       >
         {/* Hidden Native File Input */}
@@ -176,41 +177,31 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
         {/* Drag Overlay Notice when dragging file */}
         {isDraggingOver && (
-          <div
-            className={cn(
-              'absolute inset-0 bg-moso-900/95 backdrop-blur-sm flex items-center justify-center gap-2 text-emerald-400 z-30 pointer-events-none',
-              isMultiline || hasAttachments ? 'rounded-2xl sm:rounded-3xl' : 'rounded-full'
-            )}
-          >
+          <div className="absolute inset-0 rounded-[22px] bg-moso-900/95 backdrop-blur-sm flex items-center justify-center gap-2 text-accent-400 z-30 pointer-events-none">
             <FileUp className="h-4.5 w-4.5 animate-bounce" />
             <span className="text-xs font-medium">Drop PDF here to attach</span>
           </div>
         )}
 
-        {/* Attached Documents Row (Inside container when documents are present) */}
+        {/* Attached Documents Row */}
         {hasAttachments && (
-          <div className="px-3.5 pt-2.5 pb-1 flex flex-wrap gap-1.5 sm:gap-2 items-center border-b border-moso-800/60">
+          <div className="px-3.5 pt-3 pb-1 flex flex-wrap gap-1.5 sm:gap-2 items-center">
             {documents.map((doc) => (
               <div
                 key={doc.id}
-                className="group flex items-center gap-1.5 pl-2 pr-1.5 py-0.5 rounded-lg bg-moso-800/90 border border-moso-700/80 text-xs text-moso-200 hover:border-moso-600 transition-colors max-w-full"
+                className="group flex items-center gap-1.5 pl-2 pr-1.5 py-1 rounded-lg bg-moso-800/80 border border-moso-750 text-xs text-moso-200 max-w-full"
               >
-                <span className="px-1.5 py-0.2 text-[9px] font-bold tracking-wider rounded bg-rose-500/20 text-rose-400 border border-rose-500/30">
-                  PDF
-                </span>
-                <span
-                  className="font-medium text-moso-200 truncate max-w-[120px] sm:max-w-[240px]"
-                  title={doc.filename}
-                >
+                <span className="px-1.5 text-[9px] font-bold tracking-wider rounded bg-rose-500/15 text-rose-400">PDF</span>
+                <span className="font-medium truncate max-w-[120px] sm:max-w-[240px]" title={doc.filename}>
                   {doc.filename}
                 </span>
                 <span className="text-[10px] text-moso-400 shrink-0">
-                  ({doc.page_count}p • {formatFileSize(doc.file_size)})
+                  ({doc.page_count}p, {formatFileSize(doc.file_size)})
                 </span>
                 <button
                   type="button"
                   onClick={() => removeDocument(doc.id)}
-                  className="p-0.5 rounded text-moso-400 hover:text-white hover:bg-moso-700 transition-colors cursor-pointer shrink-0"
+                  className="p-0.5 rounded text-moso-400 hover:text-white hover:bg-moso-700/60 transition-colors cursor-pointer shrink-0"
                   title="Remove document"
                   aria-label={`Remove ${doc.filename}`}
                 >
@@ -220,82 +211,92 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             ))}
 
             {isUploadingDocument && (
-              <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-moso-850 border border-emerald-500/40 text-xs text-emerald-400 animate-pulse">
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-moso-850 border border-accent-500/40 text-xs text-accent-400 animate-pulse">
                 <Loader2 className="h-3 w-3 animate-spin shrink-0" />
-                <span className="text-[11px] font-medium">Extracting PDF...</span>
+                <span className="text-[11px] font-medium">Reading PDF</span>
               </div>
             )}
           </div>
         )}
 
-        {/* Main Input Row */}
-        <div
-          className={cn(
-            'flex gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2',
-            isMultiline ? 'items-end' : 'items-center'
-          )}
-        >
-          {/* Left: Plus / Attachment Button */}
-          <button
-            type="button"
-            disabled={isUploadingDocument}
-            onClick={() => fileInputRef.current?.click()}
-            className={cn(
-              'h-8 w-8 sm:h-8.5 sm:w-8.5 rounded-full flex items-center justify-center transition-colors cursor-pointer shrink-0',
-              isUploadingDocument
-                ? 'text-moso-500 cursor-not-allowed'
-                : documents.length > 0
-                ? 'text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20'
-                : 'text-moso-400 hover:text-white hover:bg-moso-800'
-            )}
-            title="Attach PDF document (max 20 MB)"
-            aria-label="Attach PDF document"
-          >
-            {isUploadingDocument ? (
-              <Loader2 className="h-4 w-4 animate-spin text-emerald-400" />
-            ) : documents.length > 0 ? (
-              <Paperclip className="h-4 w-4 text-emerald-400" />
-            ) : (
-              <Plus className="h-4.5 w-4.5" />
-            )}
-          </button>
+        {/* Text */}
+        <textarea
+          ref={textareaRef}
+          rows={1}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={
+            documents.length > 0
+              ? 'Ask about the attached PDF'
+              : webSearchEnabled
+              ? 'Ask or search the web'
+              : 'Ask Moso AI anything'
+          }
+          className="block w-full bg-transparent text-moso-100 text-[16px] placeholder:text-moso-500 resize-none focus:outline-none min-h-[28px] max-h-48 leading-relaxed px-4 pt-3.5 pb-1 scrollbar-none"
+        />
 
-          {/* Center: Text Area */}
-          <textarea
-            ref={textareaRef}
-            rows={1}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={
-              documents.length > 0
-                ? 'Ask a question about the attached PDF...'
-                : 'Ask Moso AI anything...'
-            }
-            className="flex-1 bg-transparent text-white text-[15px] sm:text-[15.5px] placeholder:text-zinc-500 resize-none focus:outline-none min-h-[24px] max-h-40 sm:max-h-48 leading-relaxed font-normal py-1 px-1 scrollbar-none"
-          />
+        {/* Actions */}
+        <div className="flex items-center justify-between gap-2 px-2.5 pb-2.5 pt-1">
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              disabled={isUploadingDocument}
+              onClick={() => fileInputRef.current?.click()}
+              className={cn(
+                'h-9 w-9 rounded-full border flex items-center justify-center transition-colors cursor-pointer shrink-0',
+                isUploadingDocument
+                  ? 'border-moso-750 text-moso-500 cursor-not-allowed'
+                  : documents.length > 0
+                  ? 'border-accent-500/40 text-accent-400 bg-accent-500/10 hover:bg-accent-500/20'
+                  : 'border-moso-750 text-moso-400 hover:text-white hover:bg-moso-800/70'
+              )}
+              title="Attach PDF document (max 20 MB)"
+              aria-label="Attach PDF document"
+            >
+              {isUploadingDocument ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : documents.length > 0 ? (
+                <Paperclip className="h-4 w-4" />
+              ) : (
+                <Plus className="h-[18px] w-[18px]" />
+              )}
+            </button>
 
-          {/* Right Actions: Model Pill & Send / Stop Button */}
+            <button
+              type="button"
+              onClick={() => setWebSearchEnabled(!webSearchEnabled)}
+              className={cn(
+                'h-9 rounded-full border flex items-center justify-center gap-1.5 transition-colors cursor-pointer shrink-0',
+                webSearchEnabled
+                  ? 'px-3 border-accent-500/40 bg-accent-500/10 text-accent-400 hover:bg-accent-500/20'
+                  : 'w-9 border-transparent text-moso-400 hover:text-white hover:bg-moso-800/70'
+              )}
+              title={webSearchEnabled ? 'Web search is on (click to turn off)' : 'Web search is off (click to turn on)'}
+              aria-label="Toggle web search"
+              aria-pressed={webSearchEnabled}
+            >
+              <Globe className="h-4 w-4" />
+              {webSearchEnabled && <span className="text-[13px] font-medium">Web</span>}
+            </button>
+          </div>
+
           <div className="flex items-center gap-1.5 shrink-0">
-            {/* Subtle Local Model Badge (matches ChatGPT Think button style) */}
             <button
               type="button"
               onClick={openSettings}
-              title={`Active model: ${currentModel?.name || selectedModel} (Click to change)`}
-              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-moso-800/80 hover:bg-moso-750 text-xs text-moso-300 border border-moso-700/60 transition-colors cursor-pointer"
+              title={`Active model: ${currentModel?.name || selectedModel} (click to change)`}
+              className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[13px] text-moso-400 hover:text-white hover:bg-moso-800/70 transition-colors cursor-pointer"
             >
-              <Sparkles className="h-3 w-3 text-emerald-400" />
-              <span className="text-[11px] font-medium max-w-[80px] truncate">
-                {currentModel?.name.replace(/^(Qwen|Ollama)\s*/i, '') || '2B'}
-              </span>
+              <span className="max-w-[120px] truncate">{currentModel?.name || selectedModel}</span>
+              <ChevronDown className="h-3 w-3" />
             </button>
 
-            {/* Send or Stop Button */}
             {isGenerating ? (
               <button
                 type="button"
                 onClick={onStopGeneration}
-                className="h-8 w-8 sm:h-8.5 sm:w-8.5 rounded-full flex items-center justify-center bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 transition-all cursor-pointer shadow-xs"
+                className="h-9 w-9 rounded-full flex items-center justify-center bg-rose-500/15 text-rose-400 hover:bg-rose-500/25 transition-colors cursor-pointer"
                 title="Stop generation"
                 aria-label="Stop generation"
               >
@@ -307,9 +308,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                 disabled={!input.trim()}
                 onClick={handleSend}
                 className={cn(
-                  'h-8 w-8 sm:h-8.5 sm:w-8.5 rounded-full flex items-center justify-center transition-all duration-150',
+                  'h-9 w-9 rounded-full flex items-center justify-center transition-colors duration-150',
                   input.trim()
-                    ? 'bg-emerald-500 text-moso-950 hover:bg-emerald-400 shadow-md cursor-pointer'
+                    ? 'bg-moso-accent text-moso-950 hover:bg-moso-accent-hover cursor-pointer'
                     : 'bg-moso-800 text-moso-500 cursor-not-allowed'
                 )}
                 aria-label="Send message"
@@ -321,6 +322,19 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           </div>
         </div>
       </div>
+
+      {variant === 'dock' && (
+        <p className="text-center pt-2 text-[12px] text-moso-500">
+          Moso AI can make mistakes.{' '}
+          <button
+            type="button"
+            onClick={openSettings}
+            className="underline underline-offset-2 hover:text-moso-300 transition-colors cursor-pointer"
+          >
+            Check important info.
+          </button>
+        </p>
+      )}
     </div>
   );
 };

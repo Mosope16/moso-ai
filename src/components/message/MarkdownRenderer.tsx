@@ -22,7 +22,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, isS
   const segments = useMemo(() => parseMarkdownSegments(content), [content]);
 
   return (
-    <div className={cn('prose-moso leading-[1.75] text-[15px] sm:text-[16px] text-moso-100 space-y-3.5', isStreaming && 'typing-cursor')}>
+    <div className={cn('prose-moso text-moso-100 space-y-3.5', isStreaming && 'typing-cursor')}>
       {segments.map((seg, idx) => {
         if (seg.type === 'code') {
           return (
@@ -364,28 +364,28 @@ function highlightSyntax(code: string, language: string): React.ReactNode {
           let className = '';
           switch (token.type) {
             case 'keyword':
-              className = 'text-indigo-400 font-semibold';
+              className = 'text-[#b4a7f5] font-semibold';
               break;
             case 'string':
-              className = 'text-emerald-400';
+              className = 'text-[#a5cf9b]';
               break;
             case 'comment':
-              className = 'text-moso-500 italic';
+              className = 'text-[#8a8678] italic';
               break;
             case 'number':
-              className = 'text-amber-400';
+              className = 'text-[#e6b56b]';
               break;
             case 'boolean':
-              className = 'text-rose-400';
+              className = 'text-[#f0907f]';
               break;
             case 'function':
-              className = 'text-sky-300';
+              className = 'text-[#7fc4e8]';
               break;
             case 'type':
-              className = 'text-yellow-200';
+              className = 'text-[#e8d48a]';
               break;
             default:
-              className = 'text-moso-100';
+              className = 'text-[#e8e4da]';
           }
 
           return (
@@ -521,34 +521,34 @@ const CodeBlock: React.FC<{ language: string; code: string }> = ({ language, cod
   const highlighted = useMemo(() => highlightSyntax(code, language), [code, language]);
 
   return (
-    <div className="my-4 rounded-xl overflow-hidden border border-moso-750/90 bg-[#0d1117] font-mono text-[13px] shadow-lg">
+    <div className="my-4 rounded-xl overflow-hidden border border-[#3a3833] bg-[#1f1e1b] font-mono text-[13px]">
       {/* Code Header Bar */}
-      <div className="flex items-center justify-between px-4 py-2 bg-moso-900/90 border-b border-moso-800 text-moso-400 select-none">
-        <span className="font-semibold text-[11px] text-moso-300 uppercase tracking-wider">
+      <div className="flex items-center justify-between pl-4 pr-2 py-1.5 bg-[#2a2926] text-[#a9a597] select-none">
+        <span className="font-sans text-[12px] text-[#a9a597]">
           {language || 'code'}
         </span>
         <button
           type="button"
           onClick={handleCopy}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] hover:text-white hover:bg-moso-800/80 transition-colors cursor-pointer"
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-md font-sans text-[12px] hover:text-[#ece9e0] hover:bg-[#3a3833] transition-colors cursor-pointer"
           title="Copy code to clipboard"
         >
           {copied ? (
             <>
-              <Check className="h-3.5 w-3.5 text-emerald-400" />
-              <span className="text-emerald-400 font-medium">Copied!</span>
+              <Check className="h-3.5 w-3.5 text-[#98be93]" />
+              <span className="text-[#98be93]">Copied</span>
             </>
           ) : (
             <>
               <Copy className="h-3.5 w-3.5" />
-              <span>Copy code</span>
+              <span>Copy</span>
             </>
           )}
         </button>
       </div>
 
       {/* Code Content (Preserves exact whitespace, tabs, and indentation) */}
-      <div className="p-4 overflow-x-auto text-moso-100 leading-relaxed font-normal selection:bg-moso-accent/25">
+      <div className="p-4 overflow-x-auto text-[#e8e4da] leading-relaxed font-normal selection:bg-[#7fa97a]/30">
         <pre className="m-0 p-0 whitespace-pre">
           <code>{highlighted}</code>
         </pre>
@@ -741,41 +741,41 @@ const ProseSegment: React.FC<{ text: string }> = ({ text }) => {
         if (block.type === 'heading') {
           if (block.level === 1) {
             return (
-              <h1 key={idx} className="text-2xl font-bold text-white tracking-tight mt-6 mb-3 border-b border-moso-800/60 pb-2">
+              <h1 key={idx} className="text-2xl font-semibold text-white mt-7 mb-3">
                 <InlineText text={block.text} />
               </h1>
             );
           }
           if (block.level === 2) {
             return (
-              <h2 key={idx} className="text-xl font-semibold text-white tracking-tight mt-5 mb-2.5">
+              <h2 key={idx} className="text-xl font-semibold text-white mt-6 mb-2.5">
                 <InlineText text={block.text} />
               </h2>
             );
           }
           if (block.level === 3) {
             return (
-              <h3 key={idx} className="text-lg font-semibold text-moso-100 tracking-tight mt-4 mb-2">
+              <h3 key={idx} className="text-lg font-semibold text-white mt-5 mb-2">
                 <InlineText text={block.text} />
               </h3>
             );
           }
           return (
-            <h4 key={idx} className="text-base font-semibold text-moso-200 tracking-tight mt-3 mb-1.5">
+            <h4 key={idx} className="text-base font-semibold text-moso-100 mt-4 mb-1.5">
               <InlineText text={block.text} />
             </h4>
           );
         }
 
         if (block.type === 'hr') {
-          return <hr key={idx} className="border-t border-moso-800 my-6" />;
+          return <hr key={idx} className="border-t border-moso-750 my-6" />;
         }
 
         if (block.type === 'blockquote') {
           return (
             <blockquote
               key={idx}
-              className="border-l-3 border-emerald-500 bg-emerald-500/5 px-4 py-2.5 my-3.5 rounded-r-lg text-moso-200 italic"
+              className="border-l-2 border-moso-600 pl-4 my-3.5 text-moso-300"
             >
               <InlineText text={block.lines.join(' ')} />
             </blockquote>
@@ -789,7 +789,7 @@ const ProseSegment: React.FC<{ text: string }> = ({ text }) => {
 
         // Paragraph
         return (
-          <p key={idx} className="my-3 text-moso-150 leading-[1.75]">
+          <p key={idx} className="my-3">
             {block.lines.map((line, lIdx) => (
               <React.Fragment key={lIdx}>
                 <InlineText text={line} />
@@ -809,22 +809,22 @@ const ProseSegment: React.FC<{ text: string }> = ({ text }) => {
 
 const MarkdownTable: React.FC<{ headers: string[]; rows: string[][] }> = ({ headers, rows }) => {
   return (
-    <div className="my-4 overflow-x-auto max-w-full rounded-xl border border-moso-750 bg-moso-900/50 shadow-sm scrollbar-thin">
-      <table className="w-full text-left border-collapse text-[13.5px]">
+    <div className="my-4 overflow-x-auto max-w-full scrollbar-thin">
+      <table className="w-full text-left border-collapse font-sans text-[14px]">
         <thead>
-          <tr className="border-b border-moso-750 bg-moso-850/90 text-white font-semibold">
+          <tr className="border-b border-moso-600 text-white font-semibold">
             {headers.map((h, hIdx) => (
-              <th key={hIdx} className="px-4 py-2.5 tracking-tight">
+              <th key={hIdx} className="px-3 py-2.5">
                 <InlineText text={h} />
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-moso-800/70 text-moso-200">
+        <tbody className="divide-y divide-moso-750 text-moso-200">
           {rows.map((row, rIdx) => (
-            <tr key={rIdx} className="hover:bg-moso-800/35 transition-colors">
+            <tr key={rIdx}>
               {row.map((cell, cIdx) => (
-                <td key={cIdx} className="px-4 py-2.5">
+                <td key={cIdx} className="px-3 py-2.5">
                   <InlineText text={cell} />
                 </td>
               ))}
@@ -869,7 +869,7 @@ export const InlineText: React.FC<{ text: string }> = ({ text }) => {
       elements.push(
         <code
           key={key++}
-          className="font-mono text-[13px] bg-moso-800 text-emerald-400 px-1.5 py-0.5 rounded border border-moso-700/70 font-medium"
+          className="font-mono text-[0.85em] bg-moso-800 text-moso-100 px-1.5 py-0.5 rounded-md"
         >
           {token.slice(1, -1)}
         </code>
@@ -945,7 +945,7 @@ export const InlineText: React.FC<{ text: string }> = ({ text }) => {
             href={linkMatch[2]}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-emerald-400 font-medium underline underline-offset-2 hover:text-emerald-300 transition-colors"
+            className="text-accent-400 font-medium underline underline-offset-2 hover:text-accent-300 transition-colors"
           >
             {linkMatch[1]}
           </a>

@@ -1,14 +1,25 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content" />
-    <title>Moso AI — Personal Local-First AI</title>
+    <title>Moso AI</title>
     <meta name="description" content="Private, fast, local-first artificial intelligence assistant powered by Ollama." />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+      // Apply the saved theme before first paint so there is no light/dark flash.
+      (function () {
+        try {
+          var s = JSON.parse(localStorage.getItem('moso_app_settings_v1') || '{}');
+          var t = s && s.appearance && s.appearance.theme;
+          var dark = t === 'light' ? false
+            : (t === 'dark' || t === 'oled' || t === 'zinc') ? true
+            : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.classList.toggle('dark', dark);
+          document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body class="bg-moso-950 text-moso-100 antialiased selection:bg-moso-accent/20 selection:text-moso-100 overflow-hidden select-none overscroll-none">
     <div id="root" class="h-dvh h-screen w-full overflow-hidden"></div>

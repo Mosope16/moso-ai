@@ -39,8 +39,8 @@ export const TesterPasswordModal: React.FC = () => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-moso-950/90 backdrop-blur-md animate-fade-in select-none">
       <div className="relative w-full max-w-md rounded-2xl bg-moso-900 border border-moso-750/90 shadow-2xl p-6 sm:p-8 overflow-hidden">
-        {/* Subtle ambient emerald glow */}
-        <div className="absolute -top-16 -right-16 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
+        {/* Subtle ambient bamboo glow */}
+        <div className="absolute -top-16 -right-16 h-40 w-40 rounded-full bg-accent-500/10 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-16 -left-16 h-40 w-40 rounded-full bg-moso-accent/10 blur-3xl pointer-events-none" />
 
         {/* Emblem & Title */}
@@ -49,7 +49,7 @@ export const TesterPasswordModal: React.FC = () => {
             <div className="h-14 w-14 rounded-2xl bg-moso-850 border border-moso-700/80 flex items-center justify-center p-3 shadow-lg">
               <img src="/logo.svg" alt="Moso AI Logo" className="h-8 w-8" />
             </div>
-            <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-emerald-500 text-moso-950 flex items-center justify-center shadow-xs">
+            <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-accent-500 text-moso-950 flex items-center justify-center shadow-xs">
               <Lock className="h-2.5 w-2.5 stroke-[2.5]" />
             </div>
           </div>
@@ -135,11 +135,11 @@ export const TesterPasswordModal: React.FC = () => {
         {/* Security & Privacy Badges Footer */}
         <div className="mt-6 pt-4 border-t border-moso-800/80 flex flex-wrap items-center justify-between text-[11px] text-moso-500 gap-2">
           <div className="flex items-center gap-1.5">
-            <Cpu className="h-3.5 w-3.5 text-emerald-400/90" />
+            <Cpu className="h-3.5 w-3.5 text-accent-400/90" />
             <span>Local Qwen 3.5 2B CPU</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <ShieldCheck className="h-3.5 w-3.5 text-emerald-400/90" />
+            <ShieldCheck className="h-3.5 w-3.5 text-accent-400/90" />
             <span>Zero Remote Telemetry</span>
           </div>
         </div>

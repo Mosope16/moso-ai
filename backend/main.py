@@ -24,7 +24,25 @@ from backend.verification import (
     classify_query,
     ReferenceEngine,
     ResponseVerifier,
+    build_system_prompt,
     build_verification_system_prompt,
+    ContextManager,
+    GENERATION_PROFILES,
+    EvidenceRegistry,
+    evaluate_evidence_gating,
+    GatingDecision,
+    validate_grounded_response,
+)
+from backend.verification.context_manager import fit_messages_to_budget
+from backend.web import (
+    validate_safe_url,
+    WebSearchManager,
+    WebFetcher,
+    GitHubInspector,
+    parse_github_target,
+    EvidenceContract,
+    WEB_TOOLS_SCHEMA,
+    execute_web_tool,
 )
 
 # ---------------------------------------------------------
@@ -51,10 +69,52 @@ load_env_file()
 
 DB_FILE = os.path.join(os.path.dirname(__file__), "moso.db")
 reference_engine = ReferenceEngine(DB_FILE)
+# Context window sent to Ollama. Override with MOSO_NUM_CTX (e.g. 8192 on 16 GB RAM) to test.
+NUM_CTX = int(os.getenv("MOSO_NUM_CTX", "4096"))
+context_manager = ContextManager(max_context_tokens=NUM_CTX, reserved_generation_tokens=1024)
+web_search_manager = WebSearchManager()
+web_fetcher = WebFetcher()
+github_inspector = GitHubInspector()
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434").rstrip("/")
-DEFAULT_MODEL = "qwen3.5:2b"
+DEFAULT_MODEL = os.getenv("MOSO_DEFAULT_MODEL", "qwen3.5:4b").strip() or "qwen3.5:4b"
+
+
+def _log_ctx(tag: str, report: dict, data: dict) -> None:
+    """Print what Ollama actually evaluated vs the window, so silent truncation shows up.
+
+    ollama_prompt_tokens can read low when Ollama reuses a cached prompt prefix.
+    """
+    try:
+        pec = data.get("prompt_eval_count")
+        msg = (
+            f"[ctx:{tag}] num_ctx={NUM_CTX} est_before={report['tokens_before']} "
+            f"est_after={report['tokens_after']} trimmed={report['trimmed']} "
+            f"ollama_prompt_tokens={pec} generated={data.get('eval_count')}"
+        )
+        if report.get("over_budget"):
+            msg += " OVER_BUDGET_AFTER_TRIM"
+        if pec is not None and pec >= int(NUM_CTX * 0.9):
+            msg += " NEAR_LIMIT"
+        print(msg, flush=True)
+    except Exception:
+        pass
 DEFAULT_MAX_TOKENS = 256
 MAX_UPLOAD_SIZE = 20 * 1024 * 1024  # 20 MB limit
+
+# Human-readable display names for known Qwen model variants
+_QWEN_DISPLAY_NAMES: dict[str, str] = {
+    "qwen3.5:4b": "Qwen 3.5 4B",
+    "qwen3.5:2b": "Qwen 3.5 2B",
+    "qwen3.5:7b": "Qwen 3.5 7B",
+    "qwen3.5:14b": "Qwen 3.5 14B",
+    "qwen3.5:32b": "Qwen 3.5 32B",
+    "qwen3:4b": "Qwen 3 4B",
+    "qwen3:8b": "Qwen 3 8B",
+}
+
+def _model_display_name(model_id: str) -> str:
+    """Return a human-readable name for a model ID, falling back to the raw ID."""
+    return _QWEN_DISPLAY_NAMES.get(model_id.lower(), model_id)
 
 # Tester Access Password (set via MOSO_ACCESS_PASSWORD in environment or .env)
 MOSO_ACCESS_PASSWORD = os.getenv("MOSO_ACCESS_PASSWORD", "").strip()
@@ -226,8 +286,9 @@ app.add_middleware(
 
 
 def get_db():
-    conn = sqlite3.connect(DB_FILE)
+    conn = sqlite3.connect(DB_FILE, timeout=30.0)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA busy_timeout = 30000")
     conn.execute("PRAGMA foreign_keys = ON")
     return conn
 
@@ -335,13 +396,32 @@ def init_db():
         )
     """)
 
-    # 8. Schema Migrations (safe alter table for existing databases)
+    # 8. Web Retrievals table (records external search queries, URLs, metadata, and status)
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS web_retrievals (
+            id TEXT PRIMARY KEY,
+            conversation_id TEXT NOT NULL,
+            message_id TEXT,
+            tool_name TEXT NOT NULL,
+            query_or_url TEXT NOT NULL,
+            status TEXT NOT NULL,
+            results_count INTEGER DEFAULT 0,
+            metadata TEXT,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE
+        )
+    """)
+    c.execute("CREATE INDEX IF NOT EXISTS idx_web_retrievals_conv ON web_retrievals(conversation_id, created_at)")
+
+    # 9. Schema Migrations (safe alter table for existing databases)
     for tbl, col, col_type in [
         ("conversations", "project_id", "TEXT"),
         ("documents", "project_id", "TEXT"),
         ("document_chunks", "project_id", "TEXT"),
         ("messages", "citations", "TEXT"),
         ("messages", "verification_report", "TEXT"),
+        ("messages", "tool_calls", "TEXT"),
+        ("messages", "diagnostics", "TEXT"),
     ]:
         try:
             c.execute(f"ALTER TABLE {tbl} ADD COLUMN {col} {col_type}")
@@ -466,8 +546,23 @@ class ChatRequest(BaseModel):
     project_id: Optional[str] = None
     model: Optional[str] = DEFAULT_MODEL
     messages: List[MessageInput]
-    max_tokens: Optional[int] = DEFAULT_MAX_TOKENS
-    temperature: Optional[float] = 0.7
+    max_tokens: Optional[int] = None
+    temperature: Optional[float] = None
+    top_p: Optional[float] = None
+    enable_web_search: Optional[bool] = True
+
+
+class WebSearchRequest(BaseModel):
+    query: str = Field(..., min_length=1)
+    max_results: Optional[int] = 5
+
+
+class WebFetchRequest(BaseModel):
+    url: str = Field(..., min_length=1)
+
+
+class GitHubInspectRequest(BaseModel):
+    url_or_repo: str = Field(..., min_length=1)
 
 
 class CreateProjectRequest(BaseModel):
@@ -865,7 +960,7 @@ async def get_models():
 
         installed_models.append({
             "id": m_name,
-            "name": f"Qwen 3.5 2B" if DEFAULT_MODEL in m_name else m_name,
+            "name": _model_display_name(m_name),
             "size": size_gb,
             "is_default": is_default,
             "is_local": True,
@@ -1344,7 +1439,7 @@ async def get_conversation(conv_id: str):
         raise HTTPException(status_code=404, detail=f"Conversation '{conv_id}' not found")
 
     c.execute("""
-        SELECT id, role, content, citations, verification_report, created_at 
+        SELECT id, role, content, citations, verification_report, tool_calls, diagnostics, created_at 
         FROM messages 
         WHERE conversation_id = ? 
         ORDER BY created_at ASC, rowid ASC
@@ -1365,12 +1460,26 @@ async def get_conversation(conv_id: str):
                 verification = json.loads(m["verification_report"])
             except Exception:
                 verification = None
+        tool_calls = None
+        if m.get("tool_calls"):
+            try:
+                tool_calls = json.loads(m["tool_calls"])
+            except Exception:
+                tool_calls = None
+        diagnostics = None
+        if m.get("diagnostics"):
+            try:
+                diagnostics = json.loads(m["diagnostics"])
+            except Exception:
+                diagnostics = None
         messages.append({
             "id": m["id"],
             "role": m["role"],
             "content": m["content"],
             "citations": citations,
             "verification": verification,
+            "tool_calls": tool_calls,
+            "diagnostics": diagnostics,
             "created_at": m["created_at"],
         })
 
@@ -1697,6 +1806,31 @@ async def delete_document(doc_id: str):
 
 
 # ---------------------------------------------------------
+# Web Tools Direct Endpoints
+# ---------------------------------------------------------
+
+@app.post("/api/v1/tools/web-search")
+async def api_web_search(req: WebSearchRequest):
+    """Perform a web search using the configured search providers."""
+    results = await web_search_manager.search(req.query, max_results=req.max_results or 5)
+    return {"query": req.query, "count": len(results), "results": [r.to_dict() for r in results]}
+
+
+@app.post("/api/v1/tools/web-fetch")
+async def api_web_fetch(req: WebFetchRequest):
+    """Safely fetch and extract readable content from an external web page or PDF."""
+    page = await web_fetcher.fetch(req.url)
+    return {"url": req.url, "page": page.to_dict()}
+
+
+@app.post("/api/v1/tools/github-inspect")
+async def api_github_inspect(req: GitHubInspectRequest):
+    """Authoritatively inspect and verify a GitHub repository with identity checks."""
+    contract = await github_inspector.inspect_repository(req.url_or_repo)
+    return {"url_or_repo": req.url_or_repo, "contract": contract.to_dict()}
+
+
+# ---------------------------------------------------------
 # Chat Streaming Endpoint
 # ---------------------------------------------------------
 
@@ -1732,8 +1866,11 @@ async def stream_chat(req: ChatRequest, request: Request):
                 (conv_id, "New Conversation", target_model, project_id, now, now),
             )
             conn.commit()
-        elif conv_row["project_id"] and not project_id:
-            project_id = conv_row["project_id"]
+        else:
+            c.execute("UPDATE conversations SET model = ?, updated_at = ? WHERE id = ?", (target_model, now, conv_id))
+            conn.commit()
+            if conv_row["project_id"] and not project_id:
+                project_id = conv_row["project_id"]
     else:
         conv_id = f"conv_{uuid.uuid4()}"
         c.execute(
@@ -1774,13 +1911,32 @@ async def stream_chat(req: ChatRequest, request: Request):
 
     conn.close()
 
-    # 3. Retrieve relevant document chunks using FTS5 / BM25
+    # 3. Check for workspace documents and perform intelligent classification
     user_query = latest_user_msg.content if latest_user_msg else ""
-    relevant_chunks = retrieve_relevant_chunks(conv_id=conv_id, project_id=project_id, query=user_query, max_words=1200)
 
-    # 4. Factual Classification & Multi-Tier Reference Grounding
-    intent = classify_query(user_query, has_workspace_documents=bool(relevant_chunks))
+    conn_chk = get_db()
+    c_chk = conn_chk.cursor()
+    c_chk.execute("""
+        SELECT COUNT(*) as count FROM documents 
+        WHERE conversation_id = ? OR (project_id IS NOT NULL AND project_id = ?)
+    """, (conv_id, project_id))
+    has_any_docs = c_chk.fetchone()["count"] > 0
+    conn_chk.close()
+
+    intent = classify_query(user_query, has_workspace_documents=has_any_docs)
+
+    # 4. Selective Retrieval: Query SQLite FTS5 only when documents are explicitly required
+    relevant_chunks = []
+    if intent.needs_local_rag or project_id:
+        relevant_chunks = retrieve_relevant_chunks(conv_id=conv_id, project_id=project_id, query=user_query, max_words=1000)
+
     retrieved_material = reference_engine.retrieve_trusted_material(intent, relevant_chunks)
+
+    # Task-Aware Generation Profile Options (Section 2)
+    profile = intent.generation_profile
+    opt_temp = req.temperature if req.temperature is not None else profile.get("temperature", 0.6)
+    opt_top_p = req.top_p if req.top_p is not None else profile.get("top_p", 0.85)
+    opt_num_predict = req.max_tokens if req.max_tokens is not None else profile.get("num_predict", 512)
 
     # Build citations list
     citations = [
@@ -1805,42 +1961,31 @@ async def stream_chat(req: ChatRequest, request: Request):
 
     # 5. SSE Streaming Generator
     async def event_generator():
+        nonlocal citations
         ollama_url = f"{OLLAMA_HOST}/api/chat"
 
-        # Prepare system prompt
-        system_prompts = []
-        if project_id:
-            # Use dedicated undergraduate engineering research assistant system prompt
-            system_prompts.append(DEFAULT_RESEARCH_SYSTEM_PROMPT)
-            if project_instructions:
-                system_prompts.append(f"PROJECT RESEARCH INSTRUCTIONS:\n{project_instructions}")
+        # Prepare concise system prompt tailored to task (Section 3)
+        system_prompt = build_system_prompt(intent, retrieved_material, project_instructions)
 
-        # Add verification & grounding directives
-        verification_prompt = build_verification_system_prompt(intent, retrieved_material, project_instructions)
-        system_prompts.append(verification_prompt)
+        # Token-aware context budgeting within 4096 tokens (Section 6)
+        raw_messages = [{"role": m.role, "content": m.content} for m in req.messages]
+        tool_ctx = (
+            f"VERIFIED COMPUTATION: {intent.deterministic_tool_result.get('data', {}).get('formatted', '')}"
+            if intent.deterministic_tool_result else ""
+        )
+        doc_ctx = retrieved_material.get("grounding_text", "")
 
-        base_messages = [{"role": m.role, "content": m.content} for m in req.messages]
-        ollama_messages = [{"role": "system", "content": "\n\n".join(system_prompts)}] + base_messages
-
-        ollama_payload = {
-            "model": target_model,
-            "messages": ollama_messages,
-            "stream": True,
-            "think": False,
-            "options": {
-                "num_predict": req.max_tokens or DEFAULT_MAX_TOKENS,
-                "temperature": req.temperature if req.temperature is not None else 0.7,
-            },
-        }
+        ollama_messages = context_manager.prepare_messages_for_inference(
+            system_prompt=system_prompt,
+            raw_messages=raw_messages,
+            document_context=doc_ctx,
+            tool_context=tool_ctx,
+        )
 
         full_content = ""
         client_cancelled = False
         error_occurred = False
         assistant_msg_id = f"msg_{uuid.uuid4()}"
-
-        # Emit citations event if document or reference evidence is used
-        if citations:
-            yield f"event: citations\ndata: {json.dumps({'citations': citations})}\n\n"
 
         # Concurrency protection: throttle simultaneous CPU inferences
         try:
@@ -1850,9 +1995,225 @@ async def stream_chat(req: ChatRequest, request: Request):
             return
 
         try:
+            working_messages = list(ollama_messages)
+            executed_tool_calls = []
+            evidence_registry = EvidenceRegistry()
+
+            # GitHub inspection is a mandatory deterministic preflight, not an
+            # optional model-selected tool. Never call Ollama (even for tool
+            # planning) until the exact requested repository has been fetched
+            # and the evidence gate has accepted its identity/content.
+            if intent.task_type == "github_inspect":
+                github_target = intent.entities.get("github_target")
+                if github_target:
+                    g_owner, g_repo, _ = github_target
+                    target_repo = f"{g_owner}/{g_repo}"
+                    yield f"event: status\ndata: {json.dumps({'status': 'executing', 'tool': 'github_inspect', 'message': f'Inspecting repository: {target_repo}', 'repo': target_repo})}\n\n"
+                    t_conn = get_db()
+                    try:
+                        fetch_text, fetch_cits, fetch_meta, fetch_contract = await execute_web_tool(
+                            "github_inspect", {"url_or_repo": target_repo}, t_conn, conv_id, assistant_msg_id
+                        )
+                    finally:
+                        t_conn.close()
+                    evidence_registry.add_contract(fetch_contract)
+                    citations.extend(fetch_cits)
+                    executed_tool_calls.append({"tool": "github_inspect", "args": {"url_or_repo": target_repo}, "result_count": len(fetch_cits)})
+                    yield f"event: status\ndata: {json.dumps({'status': 'completed' if fetch_contract.success else 'failed', 'tool': 'github_inspect', 'message': f'Inspected {target_repo}' if fetch_contract.success else f'Failed to inspect {target_repo}', 'count': len(fetch_cits)})}\n\n"
+                    working_messages.append({"role": "tool", "tool_name": "github_inspect", "content": fetch_text})
+
+            # -------------------------------------------------------------
+            # Ollama Tool-Calling Loop (generic web_search / web_fetch only)
+            # -------------------------------------------------------------
+            allow_web_tools = (
+                req.enable_web_search is not False
+                and intent.task_type not in ("conversational", "mathematical", "github_inspect")
+            )
+
+            if allow_web_tools:
+                tool_iterations = 0
+                max_tool_iterations = 4
+
+                while tool_iterations < max_tool_iterations:
+                    if await request.is_disconnected():
+                        client_cancelled = True
+                        break
+
+                    tool_check_messages, tool_report = fit_messages_to_budget(working_messages, NUM_CTX, 256)
+                    tool_check_payload = {
+                        "model": target_model,
+                        "messages": tool_check_messages,
+                        "tools": WEB_TOOLS_SCHEMA,
+                        "stream": False,
+                        "think": False,
+                        "options": {
+                            "num_predict": 256,
+                            "temperature": 0.1,
+                            "top_p": 0.8,
+                            "num_ctx": NUM_CTX,
+                        },
+                    }
+
+                    try:
+                        async with httpx.AsyncClient(timeout=httpx.Timeout(connect=5.0, read=45.0, write=5.0, pool=10.0)) as t_client:
+                            t_resp = await t_client.post(ollama_url, json=tool_check_payload)
+                            if t_resp.status_code != 200:
+                                break
+                            tool_data = t_resp.json()
+                            _log_ctx("tool_check", tool_report, tool_data)
+                    except Exception:
+                        break
+
+                    resp_msg = tool_data.get("message", {})
+                    tool_calls = resp_msg.get("tool_calls", [])
+
+                    if not tool_calls:
+                        # Fallback safeguard for direct GitHub repositories or URLs if 2B model didn't trigger tool call on iteration 0
+                        if tool_iterations == 0:
+                            if intent.task_type == "github_inspect" and intent.entities.get("github_target"):
+                                g_owner, g_repo, _ = intent.entities["github_target"]
+                                target_repo = f"{g_owner}/{g_repo}"
+                                yield f"event: status\ndata: {json.dumps({'status': 'executing', 'tool': 'github_inspect', 'message': f'Inspecting repository: {target_repo}', 'repo': target_repo})}\n\n"
+                                t_conn = get_db()
+                                fetch_text, fetch_cits, fetch_meta, fetch_contract = await execute_web_tool(
+                                    "github_inspect", {"url_or_repo": target_repo}, t_conn, conv_id, assistant_msg_id
+                                )
+                                t_conn.close()
+                                evidence_registry.add_contract(fetch_contract)
+                                citations.extend(fetch_cits)
+                                executed_tool_calls.append({"tool": "github_inspect", "args": {"url_or_repo": target_repo}, "result_count": len(fetch_cits)})
+                                yield f"event: status\ndata: {json.dumps({'status': 'completed' if fetch_contract.success else 'failed', 'tool': 'github_inspect', 'message': f'Inspected {target_repo}' if fetch_contract.success else f'Failed to inspect {target_repo}', 'count': len(fetch_cits)})}\n\n"
+                                working_messages.append({"role": "tool", "tool_name": "github_inspect", "content": fetch_text})
+                            elif intent.task_type == "web_fetch" and intent.detected_urls:
+                                target_url = intent.detected_urls[0]
+                                yield f"event: status\ndata: {json.dumps({'status': 'executing', 'tool': 'web_fetch', 'message': f'Reading web page: {target_url}', 'url': target_url})}\n\n"
+                                t_conn = get_db()
+                                fetch_text, fetch_cits, fetch_meta, fetch_contract = await execute_web_tool(
+                                    "web_fetch", {"url": target_url}, t_conn, conv_id, assistant_msg_id
+                                )
+                                t_conn.close()
+                                evidence_registry.add_contract(fetch_contract)
+                                citations.extend(fetch_cits)
+                                executed_tool_calls.append({"tool": "web_fetch", "args": {"url": target_url}, "result_count": len(fetch_cits)})
+                                domain_name = fetch_meta.get("domain", "web page")
+                                yield f"event: status\ndata: {json.dumps({'status': 'completed' if fetch_contract.success else 'failed', 'tool': 'web_fetch', 'message': f'Read content from {domain_name}' if fetch_contract.success else f'Failed to read {domain_name}', 'count': len(fetch_cits)})}\n\n"
+                                working_messages.append({"role": "tool", "tool_name": "web_fetch", "content": fetch_text})
+                        break
+
+                    # Append assistant message with tool calls
+                    working_messages.append(resp_msg)
+
+                    for call in tool_calls:
+                        fn = call.get("function", {})
+                        t_name = fn.get("name")
+                        t_args = fn.get("arguments", {})
+                        call_id = call.get("id")
+
+                        if t_name == "github_inspect":
+                            status_msg = f"Inspecting repository: {t_args.get('url_or_repo', '')}"
+                        elif t_name == "web_search":
+                            status_msg = f"Searching the web for: {t_args.get('query', '')}"
+                        elif t_name == "web_fetch":
+                            status_msg = f"Reading web page: {t_args.get('url', '')}"
+                        else:
+                            status_msg = f"Executing tool: {t_name}"
+
+                        yield f"event: status\ndata: {json.dumps({'status': 'executing', 'tool': t_name, 'message': status_msg, 'args': t_args})}\n\n"
+
+                        t_conn = get_db()
+                        tool_output, tool_cits, tool_meta, tool_contract = await execute_web_tool(
+                            t_name, t_args, t_conn, conv_id, assistant_msg_id
+                        )
+                        t_conn.close()
+
+                        evidence_registry.add_contract(tool_contract)
+                        citations.extend(tool_cits)
+                        executed_tool_calls.append({"tool": t_name, "args": t_args, "result_count": len(tool_cits)})
+
+                        if t_name == "github_inspect":
+                            done_msg = f"Inspected repository ({tool_meta.get('owner', '')}/{tool_meta.get('repo', '')})" if tool_contract.success else f"Repository inspection failed: {tool_contract.error_type}"
+                        elif t_name == "web_search":
+                            done_msg = f"Found {tool_meta.get('results_count', 0)} sources"
+                        elif t_name == "web_fetch":
+                            done_msg = f"Read page content ({tool_meta.get('domain', '')})"
+                        else:
+                            done_msg = f"Completed {t_name}"
+
+                        yield f"event: status\ndata: {json.dumps({'status': 'completed' if tool_contract.success else 'failed', 'tool': t_name, 'message': done_msg, 'count': len(tool_cits)})}\n\n"
+
+                        tool_msg_entry = {
+                            "role": "tool",
+                            "tool_name": t_name,
+                            "content": tool_output,
+                        }
+                        if call_id:
+                            tool_msg_entry["tool_call_id"] = call_id
+                        working_messages.append(tool_msg_entry)
+                        tool_iterations += 1
+
+            # -------------------------------------------------------------
+            # Deterministic Evidence Gating Evaluation
+            # -------------------------------------------------------------
+            gating_decision = evaluate_evidence_gating(intent, user_query, evidence_registry)
+
+            if gating_decision.requires_abstention:
+                # Deterministic Abstention / Honest Failure Notice (Zero Model Hallucination)
+                abstention_text = gating_decision.abstention_response or "Unable to retrieve verified evidence for this request."
+                full_content = abstention_text
+
+                yield f"event: status\ndata: {json.dumps({'status': 'failed', 'tool': 'evidence_gating', 'message': 'Retrieval incomplete / unverified'})}\n\n"
+                yield f"event: diagnostic\ndata: {json.dumps({'diagnostics': gating_decision.diagnostics, 'gated': True})}\n\n"
+                yield f"event: token\ndata: {json.dumps({'token': abstention_text})}\n\n"
+
+                # Persist to SQLite
+                try:
+                    conn_save = get_db()
+                    c_save = conn_save.cursor()
+                    now_finish = datetime.datetime.now(datetime.timezone.utc).isoformat()
+                    diag_json = json.dumps(gating_decision.diagnostics) if gating_decision.diagnostics else None
+                    tool_calls_json = json.dumps(executed_tool_calls) if executed_tool_calls else None
+                    c_save.execute(
+                        "INSERT INTO messages (id, conversation_id, role, content, citations, verification_report, tool_calls, diagnostics, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        (assistant_msg_id, conv_id, "assistant", full_content, None, json.dumps({"is_factual": True, "status": "failed", "score": 0.0}), tool_calls_json, diag_json, now_finish),
+                    )
+                    c_save.execute("UPDATE conversations SET updated_at = ? WHERE id = ?", (now_finish, conv_id))
+                    conn_save.commit()
+                    conn_save.close()
+                except Exception as e:
+                    print("Failed to save abstention message to SQLite:", e)
+
+                yield f"event: done\ndata: {json.dumps({'message_id': assistant_msg_id, 'finish_reason': 'stop', 'content': full_content, 'citations': [], 'verification': {'is_factual': True, 'status': 'failed', 'score': 0.0}, 'tool_calls': executed_tool_calls, 'diagnostics': gating_decision.diagnostics})}\n\n"
+                yield "data: [DONE]\n\n"
+                return
+
+            # Emit accumulated citations if present
+            if citations:
+                yield f"event: citations\ndata: {json.dumps({'citations': citations})}\n\n"
+
+            # Injected Grounding Directives if provided
+            if gating_decision.grounding_directives:
+                working_messages.append({"role": "system", "content": gating_decision.grounding_directives})
+
+            # -------------------------------------------------------------
+            # Final Completion Streaming from Ollama
+            # -------------------------------------------------------------
+            final_messages, final_report = fit_messages_to_budget(working_messages, NUM_CTX, opt_num_predict)
+            ollama_stream_payload = {
+                "model": target_model,
+                "messages": final_messages,
+                "stream": True,
+                "think": False,
+                "options": {
+                    "num_predict": opt_num_predict,
+                    "temperature": opt_temp,
+                    "top_p": opt_top_p,
+                    "num_ctx": NUM_CTX,
+                },
+            }
+
             try:
                 async with httpx.AsyncClient(timeout=httpx.Timeout(connect=5.0, read=120.0, write=5.0, pool=10.0)) as client:
-                    async with client.stream("POST", ollama_url, json=ollama_payload) as resp:
+                    async with client.stream("POST", ollama_url, json=ollama_stream_payload) as resp:
                         if resp.status_code != 200:
                             err_text = await resp.aread()
                             error_occurred = True
@@ -1876,6 +2237,7 @@ async def stream_chat(req: ChatRequest, request: Request):
                                     yield f"event: token\ndata: {json.dumps({'token': delta})}\n\n"
 
                                 if data.get("done", False):
+                                    _log_ctx("final", final_report, data)
                                     break
                             except json.JSONDecodeError:
                                 continue
@@ -1889,15 +2251,41 @@ async def stream_chat(req: ChatRequest, request: Request):
                 error_occurred = True
                 yield f"event: error\ndata: {json.dumps({'error': str(e), 'code': 'INTERNAL_GENERATION_ERROR'})}\n\n"
 
+            # -------------------------------------------------------------
+            # Post-Generation Claim-to-Evidence Validation
+            # -------------------------------------------------------------
+            claim_validation = validate_grounded_response(
+                full_content,
+                evidence_registry.contracts,
+                citations,
+                user_query,
+            )
+
+            # If unsupported claims detected, emit verification notice and update content
+            if claim_validation.unsupported_claims:
+                disclaimer = (
+                    "\n\n> ⚠️ **Verification Notice:** The retrieved documentation for this project does not mention "
+                    + ", ".join(claim_validation.unsupported_claims)
+                    + ". Those statements have been flagged as unverified inferences and should not be treated as established facts."
+                )
+                yield f"event: token\ndata: {json.dumps({'token': disclaimer})}\n\n"
+                full_content += disclaimer
+
+            citations = claim_validation.retained_citations
+            diagnostic_summary = gating_decision.diagnostics
+
+            # Emit diagnostic event via SSE
+            yield f"event: diagnostic\ndata: {json.dumps({'diagnostics': diagnostic_summary, 'validation_score': claim_validation.validation_score, 'supported_claims': claim_validation.supported_claims, 'unsupported_claims': claim_validation.unsupported_claims})}\n\n"
+
             # Run Factual & Quotation Verification Audit
             verifier = ResponseVerifier()
             verification_report = verifier.verify(user_query, full_content, intent, retrieved_material)
 
-            # Emit verification event via SSE if factual query
-            if verification_report and verification_report.get("is_factual"):
+            # Emit verification event via SSE if factual query requiring verification
+            if verification_report and verification_report.get("is_factual") and verification_report.get("status") != "none":
                 yield f"event: verification\ndata: {json.dumps({'verification': verification_report})}\n\n"
 
-            # Persist assistant response in SQLite with citations & verification report
+            # Persist assistant response in SQLite with citations, verification report, tool calls, and diagnostics
             if full_content and not error_occurred:
                 try:
                     conn_save = get_db()
@@ -1905,9 +2293,11 @@ async def stream_chat(req: ChatRequest, request: Request):
                     now_finish = datetime.datetime.now(datetime.timezone.utc).isoformat()
                     citations_json = json.dumps(citations) if citations else None
                     verification_json = json.dumps(verification_report) if verification_report else None
+                    tool_calls_json = json.dumps(executed_tool_calls) if executed_tool_calls else None
+                    diag_json = json.dumps(diagnostic_summary) if diagnostic_summary else None
                     c_save.execute(
-                        "INSERT INTO messages (id, conversation_id, role, content, citations, verification_report, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                        (assistant_msg_id, conv_id, "assistant", full_content, citations_json, verification_json, now_finish),
+                        "INSERT INTO messages (id, conversation_id, role, content, citations, verification_report, tool_calls, diagnostics, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        (assistant_msg_id, conv_id, "assistant", full_content, citations_json, verification_json, tool_calls_json, diag_json, now_finish),
                     )
                     c_save.execute("UPDATE conversations SET updated_at = ? WHERE id = ?", (now_finish, conv_id))
                     conn_save.commit()
@@ -1916,7 +2306,7 @@ async def stream_chat(req: ChatRequest, request: Request):
                     print("Failed to save assistant message to SQLite:", e)
 
             if not client_cancelled and not error_occurred:
-                yield f"event: done\ndata: {json.dumps({'message_id': assistant_msg_id, 'finish_reason': 'stop', 'content': full_content, 'citations': citations, 'verification': verification_report})}\n\n"
+                yield f"event: done\ndata: {json.dumps({'message_id': assistant_msg_id, 'finish_reason': 'stop', 'content': full_content, 'citations': citations, 'verification': verification_report, 'tool_calls': executed_tool_calls, 'diagnostics': diagnostic_summary})}\n\n"
                 yield "data: [DONE]\n\n"
         finally:
             INFERENCE_SEMAPHORE.release()

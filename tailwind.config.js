@@ -1,4 +1,8 @@
 /** @type {import('tailwindcss').Config} */
+// Colors are CSS variables (see src/index.css) so the same classes work in light and dark.
+const rgb = (name) => `rgb(var(--${name}) / <alpha-value>)`;
+const scale = (prefix, steps) => Object.fromEntries(steps.map((s) => [s, rgb(`${prefix}-${s}`)]));
+
 export default {
   darkMode: ['class'],
   content: [
@@ -8,46 +12,52 @@ export default {
   theme: {
     extend: {
       colors: {
+        // `text-white` means "strongest text": near-white in dark mode, near-black in light mode.
+        white: rgb('strong'),
         moso: {
-          950: '#08090d',
-          900: '#0d0f14',
-          850: '#12141c',
-          800: '#171a24',
-          750: '#1e2230',
-          700: '#272c3d',
-          600: '#383e54',
-          500: '#525b78',
-          400: '#7e88a6',
-          300: '#a5adc4',
-          200: '#cfd4e3',
-          100: '#ebeef5',
-          50: '#f7f8fb',
+          ...scale('moso', [950, 900, 850, 800, 750, 700, 600, 500, 400, 300, 200, 100, 50]),
+          side: rgb('moso-side'),
           accent: {
-            DEFAULT: '#10b981', // Bamboo emerald green
-            hover: '#059669',
-            subtle: 'rgba(16, 185, 129, 0.12)',
-            glow: 'rgba(16, 185, 129, 0.25)',
+            DEFAULT: rgb('accent-500'),
+            hover: rgb('accent-600'),
+            subtle: 'rgb(var(--accent-500) / 0.12)',
+            glow: 'rgb(var(--accent-500) / 0.25)',
           },
           cyan: {
             DEFAULT: '#06b6d4',
             subtle: 'rgba(6, 182, 212, 0.12)',
-          }
+          },
         },
+        // Moso's bamboo green. Replaces the old neon emerald.
+        accent: scale('accent', [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]),
       },
       fontFamily: {
+        // System fonts only: nothing is downloaded, so no request ever leaves the machine.
         sans: [
-          'Inter',
+          'ui-sans-serif',
           '-apple-system',
           'BlinkMacSystemFont',
           'Segoe UI',
           'Roboto',
           'Helvetica Neue',
+          'Noto Sans',
           'sans-serif',
         ],
+        serif: [
+          'ui-serif',
+          'Iowan Old Style',
+          'Palatino Linotype',
+          'Georgia',
+          'Cambria',
+          'Noto Serif',
+          'Times New Roman',
+          'serif',
+        ],
         mono: [
+          'ui-monospace',
+          'SFMono-Regular',
           'JetBrains Mono',
           'Fira Code',
-          'SFMono-Regular',
           'Menlo',
           'Monaco',
           'Consolas',

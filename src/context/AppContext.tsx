@@ -11,6 +11,7 @@ import {
   Project,
   ProjectActivity,
   ProjectNote,
+  StreamStatus,
   VerificationReport,
   WorkspaceMode,
 } from '../types';
@@ -45,6 +46,9 @@ interface AppContextType {
   settings: AppSettings;
   searchQuery: string;
   errorNotification: string | null;
+  webSearchEnabled: boolean;
+  setWebSearchEnabled: (enabled: boolean) => void;
+  activeStreamStatus: StreamStatus | null;
 
   // Actions
   sendMessage: (content: string) => Promise<void>;
@@ -105,14 +109,14 @@ const DEFAULT_SETTINGS: AppSettings = {
     sendShortcut: 'enter',
   },
   appearance: {
-    theme: 'dark',
+    theme: 'system',
     fontSize: 'medium',
     codeLigatures: true,
     compactMessages: false,
     showTimestamps: true,
   },
   models: {
-    defaultModel: 'qwen3.5:2b',
+    defaultModel: 'qwen3.5:4b',
     temperature: 0.7,
     topP: 0.9,
     maxTokens: 256,
@@ -162,6 +166,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   });
 
+  // Apply the chosen theme to <html>. "system" follows the OS and updates live.
+  useEffect(() => {
+    const pref = settings.appearance.theme;
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const apply = () => {
+      const dark =
+        pref === 'light' ? false : pref === 'dark' || pref === 'oled' || pref === 'zinc' ? true : media.matches;
+      document.documentElement.classList.toggle('dark', dark);
+      document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+    };
+    apply();
+    media.addEventListener('change', apply);
+    return () => media.removeEventListener('change', apply);
+  }, [settings.appearance.theme]);
+
   // Mock mode preference: defaults to false so real backend & SQLite are used
   const [isMockMode, setIsMockMode] = useState<boolean>(() => {
     try {
@@ -187,7 +206,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isGenerating, setIsGenerating] = useState(false);
   const [isUploadingDocument, setIsUploadingDocument] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const [selectedModel, setSelectedModel] = useState<string>('qwen3.5:2b');
+  const [selectedModel, setSelectedModel] = useState<string>('qwen3.5:4b');
   const [availableModels, setAvailableModels] = useState<ModelInfo[]>(MOCK_MODELS);
   const [connectionState, setConnectionState] = useState<ConnectionState>('connecting');
   const [healthInfo, setHealthInfo] = useState<HealthResponse | null>(null);
@@ -200,6 +219,40 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [errorNotification, setErrorNotification] = useState<string | null>(null);
+
+  // Web Retrieval State
+  const [webSearchEnabled, setWebSearchEnabledState] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('moso_web_search_enabled');
+      return saved !== null ? JSON.parse(saved) : true;
+    } catch {
+      return true;
+    }
+  });
+
+  const handleSetSelectedModel = useCallback(
+    (modelId: string) => {
+      setSelectedModel(modelId);
+      if (activeConversationId) {
+        setConversations((prev) =>
+          prev.map((c) => (c.id === activeConversationId ? { ...c, model: modelId } : c))
+        );
+        if (!isMockMode) {
+          api.updateConversationModel(activeConversationId, modelId).catch(() => {});
+        }
+      }
+    },
+    [activeConversationId, isMockMode]
+  );
+
+  const setWebSearchEnabled = (enabled: boolean) => {
+    setWebSearchEnabledState(enabled);
+    try {
+      localStorage.setItem('moso_web_search_enabled', JSON.stringify(enabled));
+    } catch {}
+  };
+
+  const [activeStreamStatus, setActiveStreamStatus] = useState<StreamStatus | null>(null);
 
   // Tester Authentication State
   const [isAuthRequired, setIsAuthRequired] = useState(false);
@@ -623,6 +676,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
     }
+    setActiveStreamStatus(null);
     setIsGenerating(false);
     setConnectionState((prev) => (prev === 'generating' ? 'connected' : prev));
   };
@@ -699,6 +753,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     let streamedText = '';
     let currentCitations: Citation[] = [];
     let currentVerification: VerificationReport | undefined = undefined;
+    let currentDiagnostics: any[] = [];
 
     await streamService.streamChat(
       {
@@ -708,6 +763,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         messages: chatHistory,
         max_tokens: settings.models.maxTokens || 256,
         temperature: settings.models.temperature ?? 0.7,
+        enable_web_search: webSearchEnabled,
       },
       {
         onToken: (token: string) => {
@@ -720,12 +776,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             )
           );
         },
+        onStatus: (status: StreamStatus) => {
+          setActiveStreamStatus(status);
+        },
         onCitations: (citations: Citation[]) => {
           currentCitations = citations;
           setMessages((prev) =>
             prev.map((msg) =>
               msg.id === assistantMsgPlaceholder.id
                 ? { ...msg, citations }
+                : msg
+            )
+          );
+        },
+        onDiagnostics: (diagnostics: any[]) => {
+          currentDiagnostics = diagnostics;
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === assistantMsgPlaceholder.id
+                ? { ...msg, diagnostics }
                 : msg
             )
           );
@@ -741,6 +810,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           );
         },
         onComplete: async (fullText: string) => {
+          setActiveStreamStatus(null);
           setIsGenerating(false);
           setConnectionState('connected');
           const finalAssistantMsg: Message = {
@@ -748,6 +818,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             content: fullText,
             citations: currentCitations,
             verification: currentVerification,
+            diagnostics: currentDiagnostics,
             is_streaming: false,
           };
 
@@ -778,6 +849,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           abortControllerRef.current = null;
         },
         onError: (err: Error) => {
+          setActiveStreamStatus(null);
           setIsGenerating(false);
           setConnectionState(isMockMode ? 'connected' : 'disconnected');
           setMessages((prev) =>
@@ -891,6 +963,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         settings,
         searchQuery,
         errorNotification,
+        webSearchEnabled,
+        setWebSearchEnabled,
+        activeStreamStatus,
         sendMessage,
         stopGeneration,
         regenerateLastResponse,
@@ -901,7 +976,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         uploadDocument,
         removeDocument,
         clearUploadError,
-        setSelectedModel,
+        setSelectedModel: handleSetSelectedModel,
         toggleSidebar,
         setSidebarOpen: setIsSidebarOpen,
         openSettings,

@@ -1,9 +1,11 @@
-import { Citation, Conversation, DocumentInfo, HealthResponse, ModelInfo, Project, ProjectActivity, ProjectNote, VerificationReport } from '../types';
+import { Citation, Conversation, DocumentInfo, HealthResponse, ModelInfo, Project, ProjectActivity, ProjectNote, RetrievalDiagnostic, StreamStatus, VerificationReport } from '../types';
 
 export interface ChatStreamCallbacks {
   onToken: (token: string) => void;
   onCitations?: (citations: Citation[]) => void;
   onVerification?: (verification: VerificationReport) => void;
+  onStatus?: (status: StreamStatus) => void;
+  onDiagnostics?: (diagnostics: RetrievalDiagnostic[]) => void;
   onComplete: (fullText: string) => void;
   onError: (error: Error) => void;
 }
@@ -15,6 +17,7 @@ export interface ChatStreamPayload {
   messages: { role: string; content: string }[];
   max_tokens?: number;
   temperature?: number;
+  enable_web_search?: boolean;
 }
 
 export class FastApiClient {
@@ -175,7 +178,7 @@ export class FastApiClient {
     return {
       status: data.status || 'ok',
       ollama_connected: Boolean(data.ollama_connected ?? data.ollama ?? true),
-      active_model: data.active_model || 'qwen3.5:2b',
+      active_model: data.active_model || 'qwen3.5:4b',
       version: data.version || '0.2.0',
       models_available: data.models_count ?? (Array.isArray(data.models) ? data.models.length : 1),
       uptime_seconds: data.uptime_seconds,
@@ -211,7 +214,7 @@ export class FastApiClient {
       family: m.family || m.details?.family || 'qwen35',
       provider: m.provider || (m.is_local !== false ? 'ollama' : 'cloud'),
       is_local: m.is_local ?? true,
-      is_default: m.is_default || m.id === 'qwen3.5:2b',
+      is_default: m.is_default || m.id === 'qwen3.5:4b',
       context_length: m.context_length || 262144,
     }));
   }
@@ -460,7 +463,7 @@ export class FastApiClient {
       title: c.title || 'Untitled Conversation',
       created_at: c.created_at || new Date().toISOString(),
       updated_at: c.updated_at || c.created_at || new Date().toISOString(),
-      model: c.model || 'qwen3.5:2b',
+      model: c.model || 'qwen3.5:4b',
       project_id: c.project_id || undefined,
       message_count: c.message_count ?? (Array.isArray(c.messages) ? c.messages.length : 0),
       document_count: c.document_count || 0,
@@ -482,7 +485,7 @@ export class FastApiClient {
    */
   async createConversation(
     title: string = 'New Conversation',
-    model: string = 'qwen3.5:2b',
+    model: string = 'qwen3.5:4b',
     projectId?: string
   ): Promise<Conversation> {
     const response = await this.fetchWithAuth(`${this.baseUrl}/conversations`, {
@@ -535,7 +538,7 @@ export class FastApiClient {
       title: data.title,
       created_at: data.created_at,
       updated_at: data.updated_at,
-      model: data.model || 'qwen3.5:2b',
+      model: data.model || 'qwen3.5:4b',
       project_id: data.project_id || undefined,
       message_count: data.message_count ?? (data.messages?.length || 0),
       messages: (data.messages || []).map((m: any) => ({
@@ -585,9 +588,23 @@ export class FastApiClient {
       title: data.title,
       created_at: data.created_at,
       updated_at: data.updated_at,
-      model: data.model || 'qwen3.5:2b',
+      model: data.model || 'qwen3.5:4b',
       project_id: data.project_id,
     };
+  }
+
+  /**
+   * Update active model for an existing conversation
+   * PATCH /api/v1/conversations/{id}
+   */
+  async updateConversationModel(id: string, model: string): Promise<void> {
+    await this.fetchWithAuth(`${this.baseUrl}/conversations/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ model }),
+    }).catch(() => {});
   }
 
   /**
@@ -726,6 +743,44 @@ export class FastApiClient {
   }
 
   /**
+   * Perform direct web search
+   * POST /api/v1/tools/web-search
+   */
+  async searchWeb(query: string, maxResults: number = 5): Promise<any> {
+    const response = await this.fetchWithAuth(`${this.baseUrl}/tools/web-search`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({ query, max_results: maxResults }),
+    });
+    if (!response.ok) {
+      throw new Error(`Web search failed with status ${response.status}`);
+    }
+    return response.json();
+  }
+
+  /**
+   * Safely fetch external web page or PDF content
+   * POST /api/v1/tools/web-fetch
+   */
+  async fetchWebUrl(url: string): Promise<any> {
+    const response = await this.fetchWithAuth(`${this.baseUrl}/tools/web-fetch`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({ url }),
+    });
+    if (!response.ok) {
+      throw new Error(`Web fetch failed with status ${response.status}`);
+    }
+    return response.json();
+  }
+
+  /**
    * Stream chat completion via Server-Sent Events (SSE)
    * POST /api/v1/chat
    */
@@ -748,6 +803,7 @@ export class FastApiClient {
           messages: payload.messages,
           max_tokens: payload.max_tokens,
           temperature: payload.temperature,
+          enable_web_search: payload.enable_web_search,
           stream: true,
         }),
         signal,
@@ -814,29 +870,44 @@ export class FastApiClient {
                 accumulatedText += token;
                 callbacks.onToken(token);
               }
-              // 2. Citations payload event
+              // 2. Status / tool execution event
+              else if (currentEvent === 'status' || parsed.status) {
+                if (callbacks.onStatus && (parsed.message || parsed.tool)) {
+                  callbacks.onStatus(parsed);
+                }
+              }
+              // 3. Citations payload event
               else if (currentEvent === 'citations' || parsed.citations) {
                 if (callbacks.onCitations && Array.isArray(parsed.citations)) {
                   callbacks.onCitations(parsed.citations);
                 }
               }
-              // 3. Verification report event
+              // 4. Diagnostics event
+              else if (currentEvent === 'diagnostic' || parsed.diagnostics) {
+                if (callbacks.onDiagnostics && parsed.diagnostics) {
+                  callbacks.onDiagnostics(parsed.diagnostics);
+                }
+              }
+              // 5. Verification report event
               else if (currentEvent === 'verification' || parsed.verification) {
                 if (callbacks.onVerification && parsed.verification) {
                   callbacks.onVerification(parsed.verification);
                 }
               }
-              // 4. Inference error event
+              // 6. Inference error event
               else if (currentEvent === 'error' || parsed.error) {
                 throw new Error(parsed.error || 'Unknown streaming inference error');
               }
-              // 5. Final completion summary event
+              // 7. Final completion summary event
               else if (currentEvent === 'done') {
                 if (parsed.citations && callbacks.onCitations) {
                   callbacks.onCitations(parsed.citations);
                 }
                 if (parsed.verification && callbacks.onVerification) {
                   callbacks.onVerification(parsed.verification);
+                }
+                if (parsed.diagnostics && callbacks.onDiagnostics) {
+                  callbacks.onDiagnostics(parsed.diagnostics);
                 }
                 isDone = true;
                 callbacks.onComplete(accumulatedText);

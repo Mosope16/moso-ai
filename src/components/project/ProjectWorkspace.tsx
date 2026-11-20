@@ -178,7 +178,7 @@ export const ProjectWorkspace: React.FC = () => {
             >
               <ArrowLeft className="h-4 w-4" />
             </button>
-            <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shrink-0">
+            <div className="p-2 rounded-lg bg-accent-500/10 border border-accent-500/20 text-accent-400 shrink-0">
               <BookOpen className="h-5 w-5" />
             </div>
 
@@ -188,7 +188,7 @@ export const ProjectWorkspace: React.FC = () => {
                   type="text"
                   value={editedTitle}
                   onChange={(e) => setEditedTitle(e.target.value)}
-                  className="bg-moso-850 border border-moso-700 rounded px-2 py-0.5 text-sm font-semibold text-white focus:outline-none focus:border-emerald-500"
+                  className="bg-moso-850 border border-moso-700 rounded px-2 py-0.5 text-sm font-semibold text-white focus:outline-none focus:border-accent-500"
                   placeholder="Project Title"
                   autoFocus
                 />
@@ -196,7 +196,7 @@ export const ProjectWorkspace: React.FC = () => {
                   type="text"
                   value={editedDescription}
                   onChange={(e) => setEditedDescription(e.target.value)}
-                  className="bg-moso-850 border border-moso-700 rounded px-2 py-0.5 text-xs text-moso-300 focus:outline-none focus:border-emerald-500"
+                  className="bg-moso-850 border border-moso-700 rounded px-2 py-0.5 text-xs text-moso-300 focus:outline-none focus:border-accent-500"
                   placeholder="Short description or research thesis"
                 />
                 <div className="flex items-center gap-2 mt-1">
@@ -214,7 +214,7 @@ export const ProjectWorkspace: React.FC = () => {
                   <h1 className="text-base font-semibold text-white truncate">
                     {activeProject.name}
                   </h1>
-                  <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-medium">
+                  <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-accent-500/15 text-accent-400 border border-accent-500/30 font-medium">
                     Research Workspace
                   </span>
                   <button
@@ -248,7 +248,7 @@ export const ProjectWorkspace: React.FC = () => {
               onClick={() => fileInputRef.current?.click()}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-moso-850 hover:bg-moso-800 border border-moso-750 text-xs text-moso-200 hover:text-white transition-colors cursor-pointer font-medium"
             >
-              <FileUp className="h-3.5 w-3.5 text-emerald-400" />
+              <FileUp className="h-3.5 w-3.5 text-accent-400" />
               <span>Add Paper</span>
             </button>
             <input
@@ -262,7 +262,7 @@ export const ProjectWorkspace: React.FC = () => {
             <button
               type="button"
               onClick={() => handleOpenNewNoteModal()}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-xs text-white font-medium transition-colors cursor-pointer shadow-xs"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent-600 hover:bg-accent-500 text-xs text-white font-medium transition-colors cursor-pointer shadow-xs"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>Add Note</span>
@@ -291,7 +291,7 @@ export const ProjectWorkspace: React.FC = () => {
                 : 'text-moso-400 hover:text-moso-200 hover:bg-moso-850'
             )}
           >
-            <MessageSquare className="h-3.5 w-3.5 text-emerald-400" />
+            <MessageSquare className="h-3.5 w-3.5 text-accent-400" />
             <span>Research Chat</span>
           </button>
 
@@ -363,7 +363,7 @@ export const ProjectWorkspace: React.FC = () => {
               <div className="border-b border-moso-800/60 bg-moso-900/50 px-4 py-2 shrink-0">
                 <div className="max-w-[880px] lg:max-w-[920px] mx-auto flex items-center justify-between text-xs gap-3">
                   <div className="flex items-center gap-2 text-moso-300 font-medium shrink-0">
-                    <BookOpen className="h-3.5 w-3.5 text-emerald-400" />
+                    <BookOpen className="h-3.5 w-3.5 text-accent-400" />
                     <span>Project Library Context ({projectDocuments.length}):</span>
                   </div>
                   <div className="flex items-center gap-2 overflow-x-auto py-0.5 scrollbar-thin">
@@ -392,7 +392,7 @@ export const ProjectWorkspace: React.FC = () => {
             <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 md:px-8 space-y-4">
               {messages.length === 0 ? (
                 <div className="max-w-2xl mx-auto my-auto text-center py-12 px-4">
-                  <div className="h-12 w-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-3 shadow-inner">
+                  <div className="h-12 w-12 rounded-xl bg-accent-500/10 border border-accent-500/20 text-accent-400 flex items-center justify-center mx-auto mb-3 shadow-inner">
                     <Sparkles className="h-6 w-6" />
                   </div>
                   <h2 className="text-lg font-semibold text-white">
@@ -526,7 +526,7 @@ export const ProjectWorkspace: React.FC = () => {
                             {doc.page_count} pages
                           </span>
                           <span className="text-moso-600">•</span>
-                          <span className="text-emerald-400 font-mono">FTS5 Indexed</span>
+                          <span className="text-accent-400 font-mono">FTS5 Indexed</span>
                           <span className="text-moso-600">•</span>
                           <span>{formatRelativeTime(doc.created_at)}</span>
                         </div>
@@ -576,7 +576,7 @@ export const ProjectWorkspace: React.FC = () => {
                       className={cn(
                         'px-2.5 py-1 rounded-md text-xs font-medium capitalize transition-colors cursor-pointer',
                         selectedNoteCategoryFilter === cat
-                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                          ? 'bg-accent-500/20 text-accent-300 border border-accent-500/30'
                           : 'bg-moso-850 text-moso-400 hover:text-white border border-moso-750'
                       )}
                     >
@@ -611,7 +611,7 @@ export const ProjectWorkspace: React.FC = () => {
                             <span
                               className={cn(
                                 'text-[10px] font-mono uppercase px-1.5 py-0.5 rounded font-semibold',
-                                note.category === 'finding' && 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30',
+                                note.category === 'finding' && 'bg-accent-500/15 text-accent-400 border border-accent-500/30',
                                 note.category === 'methodology' && 'bg-purple-500/15 text-purple-400 border border-purple-500/30',
                                 note.category === 'experiment' && 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/30',
                                 note.category === 'note' && 'bg-moso-700/50 text-moso-300 border border-moso-600/50'
@@ -675,13 +675,13 @@ export const ProjectWorkspace: React.FC = () => {
                   value={instructionsText}
                   onChange={(e) => setInstructionsText(e.target.value)}
                   rows={10}
-                  className="w-full bg-moso-850 border border-moso-750 rounded-xl p-3.5 text-xs text-moso-100 placeholder:text-moso-500 focus:outline-none focus:border-emerald-500 font-sans leading-relaxed"
+                  className="w-full bg-moso-850 border border-moso-750 rounded-xl p-3.5 text-xs text-moso-100 placeholder:text-moso-500 focus:outline-none focus:border-accent-500 font-sans leading-relaxed"
                   placeholder="e.g. Focus on deep learning for biomedical image segmentation. When evaluating algorithms, prioritize Dice score and Hausdorff distance. Compare U-Net with Swin-UNETR transformers and explain any differential equations with KaTeX."
                 />
 
                 <div className="flex items-center justify-between">
                   {instructionsSavedMessage ? (
-                    <span className="text-xs text-emerald-400 font-medium flex items-center gap-1.5">
+                    <span className="text-xs text-accent-400 font-medium flex items-center gap-1.5">
                       <Check className="h-3.5 w-3.5" /> Saved to SQLite workspace configuration
                     </span>
                   ) : (
@@ -722,7 +722,7 @@ export const ProjectWorkspace: React.FC = () => {
                 <div className="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-moso-800">
                   {projectActivity.map((act) => (
                     <div key={act.id} className="relative flex items-start gap-3 text-xs">
-                      <div className="absolute -left-6 mt-1 h-3.5 w-3.5 rounded-full bg-emerald-500/20 border-2 border-emerald-400 shrink-0" />
+                      <div className="absolute -left-6 mt-1 h-3.5 w-3.5 rounded-full bg-accent-500/20 border-2 border-accent-400 shrink-0" />
                       <div className="bg-moso-850/80 border border-moso-800 rounded-lg p-3 w-full">
                         <div className="flex items-center justify-between gap-2">
                           <span className="font-semibold text-moso-200 capitalize">
@@ -763,7 +763,7 @@ export const ProjectWorkspace: React.FC = () => {
               value={noteTitle}
               onChange={(e) => setNoteTitle(e.target.value)}
               placeholder="e.g. Validation Loss Anomaly in Epoch 42"
-              className="w-full bg-moso-850 border border-moso-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+              className="w-full bg-moso-850 border border-moso-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accent-500"
             />
           </div>
 
@@ -780,7 +780,7 @@ export const ProjectWorkspace: React.FC = () => {
                   className={cn(
                     'px-2 py-1.5 rounded-md text-xs capitalize font-medium transition-colors cursor-pointer text-center',
                     noteCategory === cat
-                      ? 'bg-emerald-500 text-white font-semibold'
+                      ? 'bg-accent-500 text-white font-semibold'
                       : 'bg-moso-850 text-moso-400 hover:text-white border border-moso-750'
                   )}
                 >
@@ -799,7 +799,7 @@ export const ProjectWorkspace: React.FC = () => {
               onChange={(e) => setNoteContent(e.target.value)}
               rows={6}
               placeholder="Detailed findings, mathematical equations, or experimental notes..."
-              className="w-full bg-moso-850 border border-moso-700 rounded-lg p-3 text-xs text-white focus:outline-none focus:border-emerald-500 font-sans leading-relaxed"
+              className="w-full bg-moso-850 border border-moso-700 rounded-lg p-3 text-xs text-white focus:outline-none focus:border-accent-500 font-sans leading-relaxed"
             />
           </div>
 

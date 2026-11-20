@@ -35,7 +35,7 @@ class ResponseVerifier:
         """
         Audit model response against retrieved evidence and return a VerificationReport.
         """
-        if not intent.is_factual:
+        if not intent.is_factual or not getattr(intent, "needs_verification", True):
             return {
                 "status": "none",
                 "is_factual": False,

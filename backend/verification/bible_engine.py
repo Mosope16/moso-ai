@@ -128,7 +128,8 @@ class BibleEngine:
 
     def _init_db(self):
         """Initialize the local trusted scripture table and seed public domain verses if empty."""
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, timeout=30.0)
+        conn.execute("PRAGMA busy_timeout = 30000")
         c = conn.cursor()
         c.execute("""
             CREATE TABLE IF NOT EXISTS trusted_bible_verses (
@@ -187,7 +188,8 @@ class BibleEngine:
             }
 
         # Query local database for public domain translation
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, timeout=30.0)
+        conn.execute("PRAGMA busy_timeout = 30000")
         conn.row_factory = sqlite3.Row
         c = conn.cursor()
 
@@ -236,7 +238,8 @@ class BibleEngine:
 
     def _get_fallback_text(self, book: str, chapter: int, verse: int) -> Optional[Dict[str, Any]]:
         """Attempt to load a public-domain alternative (e.g. WEB or KJV)."""
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, timeout=30.0)
+        conn.execute("PRAGMA busy_timeout = 30000")
         conn.row_factory = sqlite3.Row
         c = conn.cursor()
         c.execute("""
@@ -257,7 +260,8 @@ class BibleEngine:
 
     def seed_reference_passages(self, passages: List[Dict[str, Any]]):
         """Seed verified public domain passages into local storage."""
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, timeout=30.0)
+        conn.execute("PRAGMA busy_timeout = 30000")
         c = conn.cursor()
         for p in passages:
             v_id = f"{p['translation']}_{p['book']}_{p['chapter']}_{p['verse']}".lower().replace(" ", "_")

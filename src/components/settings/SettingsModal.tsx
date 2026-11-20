@@ -9,6 +9,8 @@ import {
   RefreshCw,
   Trash2,
   Lock,
+  Cpu,
+  Check,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Modal } from '../ui/Modal';
@@ -25,6 +27,8 @@ export const SettingsModal: React.FC = () => {
     closeSettings,
     settings,
     updateSettings,
+    selectedModel,
+    setSelectedModel,
     availableModels,
     checkConnection,
     connectionState,
@@ -125,7 +129,7 @@ export const SettingsModal: React.FC = () => {
                   'w-full py-1 px-2 rounded text-[10px] font-mono font-medium border text-center transition-colors cursor-pointer',
                   isMockMode
                     ? 'bg-cyan-500/15 border-cyan-500/30 text-cyan-300'
-                    : 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
+                    : 'bg-accent-500/15 border-accent-500/30 text-accent-300'
                 )}
               >
                 {isMockMode ? 'Dev Mock Mode (Active)' : 'Live Backend (Active)'}
@@ -182,19 +186,19 @@ export const SettingsModal: React.FC = () => {
             <div className="space-y-5">
               <div>
                 <h4 className="text-sm font-semibold text-white mb-1">Interface Theme</h4>
-                <p className="text-moso-400 text-xs mb-3">Moso AI defaults to dark themes optimized for focus.</p>
+                <p className="text-moso-400 text-xs mb-3">Choose a look, or follow your system setting.</p>
                 <div className="grid grid-cols-3 gap-2.5">
                   {[
-                    { id: 'dark', label: 'Dark Obsidian (Default)' },
-                    { id: 'oled', label: 'Midnight OLED' },
-                    { id: 'zinc', label: 'Titanium Zinc' },
+                    { id: 'system', label: 'System' },
+                    { id: 'light', label: 'Light' },
+                    { id: 'dark', label: 'Dark' },
                   ].map((t) => (
                     <button
                       key={t.id}
                       onClick={() => updateSettings({ appearance: { ...settings.appearance, theme: t.id as any } })}
                       className={cn(
                         'p-3 rounded-lg border text-left transition-colors cursor-pointer',
-                        settings.appearance.theme === t.id
+                        (['oled', 'zinc'].includes(settings.appearance.theme) ? 'dark' : settings.appearance.theme) === t.id
                           ? 'border-moso-accent bg-moso-800 text-white font-medium'
                           : 'border-moso-750 bg-moso-900 text-moso-400 hover:border-moso-700'
                       )}
@@ -245,21 +249,105 @@ export const SettingsModal: React.FC = () => {
           {activeTab === 'models' && (
             <div className="space-y-4">
               <div>
-                <h4 className="text-sm font-semibold text-white mb-1">Default Model</h4>
-                <p className="text-moso-400 text-xs mb-2">Selected model for new sessions.</p>
-                <select
-                  value={settings.models.defaultModel}
-                  onChange={(e) => updateSettings({ models: { ...settings.models, defaultModel: e.target.value } })}
-                  className="w-full bg-moso-900 border border-moso-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-moso-accent"
-                >
+                <div className="flex items-center justify-between mb-1">
+                  <h4 className="text-sm font-semibold text-white">Active Ollama Model</h4>
+                  <button
+                    type="button"
+                    onClick={() => checkConnection()}
+                    className="flex items-center gap-1 text-[11px] text-moso-accent hover:underline cursor-pointer"
+                    title="Scan Ollama for newly downloaded models"
+                  >
+                    <RefreshCw className="h-3 w-3" />
+                    <span>Refresh Models</span>
+                  </button>
+                </div>
+                <p className="text-moso-400 text-xs mb-2.5">
+                  Select which local SLM powers your chat completions and research workspace.
+                </p>
+
+                {/* Interactive Model Selection Cards */}
+                <div className="space-y-2 mb-3">
                   {availableModels
                     .filter((m) => m.is_local)
-                    .map((m) => (
-                      <option key={m.id} value={m.id}>
-                        {m.name} ({m.size})
-                      </option>
-                    ))}
-                </select>
+                    .map((m) => {
+                      const isCurrent = selectedModel === m.id;
+                      return (
+                        <div
+                          key={m.id}
+                          onClick={() => {
+                            setSelectedModel(m.id);
+                            updateSettings({ models: { ...settings.models, defaultModel: m.id } });
+                          }}
+                          className={cn(
+                            'p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between',
+                            isCurrent
+                              ? 'bg-moso-800/90 border-moso-accent/70 shadow-sm'
+                              : 'bg-moso-900/60 border-moso-700/60 hover:bg-moso-800/40 hover:border-moso-600'
+                          )}
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                            <div
+                              className={cn(
+                                'h-8 w-8 rounded-lg flex items-center justify-center shrink-0',
+                                isCurrent ? 'bg-moso-accent/20 text-moso-accent' : 'bg-moso-800 text-moso-400'
+                              )}
+                            >
+                              <Cpu className="h-4 w-4" />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className={cn('text-xs font-semibold', isCurrent ? 'text-white' : 'text-moso-200')}>
+                                  {m.name}
+                                </span>
+                                {m.is_default && (
+                                  <Badge variant="accent" size="sm">
+                                    Default
+                                  </Badge>
+                                )}
+                              </div>
+                              <p className="text-[11px] text-moso-400 truncate mt-0.5">
+                                {m.description}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="text-[11px] font-mono text-moso-400">{m.size}</span>
+                            {isCurrent ? (
+                              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent-500/20 text-accent-400 text-[10px] font-medium border border-accent-500/30">
+                                <Check className="h-3 w-3" />
+                                <span>Active</span>
+                              </div>
+                            ) : (
+                              <span className="text-[11px] text-moso-500 hover:text-moso-300">
+                                Select
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+
+                <div className="pt-1">
+                  <label className="text-xs text-moso-400 mb-1 block">Default Model for New Chats</label>
+                  <select
+                    value={settings.models.defaultModel}
+                    onChange={(e) => {
+                      const newModel = e.target.value;
+                      updateSettings({ models: { ...settings.models, defaultModel: newModel } });
+                      setSelectedModel(newModel);
+                    }}
+                    className="w-full bg-moso-900 border border-moso-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-moso-accent"
+                  >
+                    {availableModels
+                      .filter((m) => m.is_local)
+                      .map((m) => (
+                        <option key={m.id} value={m.id}>
+                          {m.name} ({m.size}) {m.id === selectedModel ? '— Currently Active' : ''}
+                        </option>
+                      ))}
+                  </select>
+                </div>
               </div>
 
               <div>
@@ -355,7 +443,7 @@ export const SettingsModal: React.FC = () => {
                     className={cn(
                       'mt-3 p-3 rounded-lg border text-xs leading-relaxed',
                       testResult.success
-                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                        ? 'bg-accent-500/10 border-accent-500/30 text-accent-300'
                         : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
                     )}
                   >
@@ -370,8 +458,8 @@ export const SettingsModal: React.FC = () => {
           {/* PRIVACY TAB */}
           {activeTab === 'privacy' && (
             <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-moso-900 border border-emerald-500/20 space-y-2">
-                <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
+              <div className="p-4 rounded-xl bg-moso-900 border border-accent-500/20 space-y-2">
+                <div className="flex items-center gap-2 text-accent-400 font-semibold text-sm">
                   <Shield className="h-4 w-4" />
                   <span>Zero-Telemetry Commitment</span>
                 </div>

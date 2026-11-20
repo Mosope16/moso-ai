@@ -20,15 +20,27 @@ function generateUuid(): string {
 
 export const MOCK_MODELS: ModelInfo[] = [
   {
+    id: 'qwen3.5:4b',
+    name: 'Qwen 3.5 4B',
+    description: 'Default local model for reasoning, research, web grounding, and coding (Ollama)',
+    size: '3.1 GB',
+    parameters: '4B',
+    family: 'qwen35',
+    provider: 'ollama',
+    is_local: true,
+    is_default: true,
+    context_length: 262144,
+  },
+  {
     id: 'qwen3.5:2b',
     name: 'Qwen 3.5 2B',
-    description: 'Default local model for everyday assistance, research, and coding (Ollama)',
+    description: 'Ultra-lightweight local model for quick tasks and low-resource environments (Ollama)',
     size: '1.9 GB',
     parameters: '2B',
     family: 'qwen35',
     provider: 'ollama',
     is_local: true,
-    is_default: true,
+    is_default: false,
     context_length: 262144,
   },
   {
@@ -228,7 +240,7 @@ class MockService {
     return {
       status: 'ok',
       ollama_connected: true,
-      active_model: 'qwen3.5:2b',
+      active_model: 'qwen3.5:4b',
       version: '0.2.0 (Mock Mode)',
       models_available: 3,
       latency_ms: 5,
@@ -401,7 +413,7 @@ class MockService {
 
   async createConversation(
     title: string = 'New Conversation',
-    model: string = 'qwen3.5:2b',
+    model: string = 'qwen3.5:4b',
     projectId?: string
   ): Promise<Conversation> {
     const newConv: Conversation = {

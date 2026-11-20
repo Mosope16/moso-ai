@@ -9,7 +9,6 @@ import {
   Check,
   X,
   ChevronLeft,
-  Cpu,
   BookOpen,
   FolderPlus,
 } from 'lucide-react';
@@ -152,31 +151,23 @@ export const Sidebar: React.FC = () => {
       {/* Sidebar (Desktop) / Sliding Overlay Drawer (Mobile) */}
       <aside
         className={cn(
-          'bg-moso-900 border-r border-moso-800/80 flex flex-col h-full select-none shrink-0 transition-all duration-200',
+          'bg-moso-side border-r border-moso-750/60 flex flex-col h-full select-none shrink-0 transition-all duration-200',
           'fixed inset-y-0 left-0 z-50 w-[85vw] max-w-[320px] shadow-2xl animate-slide-right',
           'md:relative md:inset-auto md:w-72 md:shadow-none md:animate-none md:z-30'
         )}
       >
         {/* Brand & Collapse Header */}
-        <div className="p-3.5 border-b border-moso-800/60 flex items-center justify-between">
+        <div className="px-4 pt-4 pb-2 flex items-center justify-between">
           <div
             onClick={() => {
               createNewConversation();
               if (window.innerWidth < 768) setSidebarOpen(false);
             }}
-            className="flex items-center gap-2.5 cursor-pointer group hover:opacity-90 transition-opacity"
+            className="flex items-center gap-2.5 cursor-pointer hover:opacity-80 transition-opacity"
             title="Start new conversation"
           >
-            <img src="/logo.svg" alt="Moso AI" className="h-7 w-7 rounded-lg shadow-sm" />
-            <div className="flex flex-col">
-              <span className="font-semibold text-sm tracking-tight text-white flex items-center gap-1.5">
-                Moso AI
-                <span className="text-[10px] font-mono font-medium px-1.5 py-0.2 rounded bg-moso-800 text-moso-accent border border-moso-700/60">
-                  v0.1
-                </span>
-              </span>
-              <span className="text-[10px] text-moso-400 font-normal">Local-First Assistant</span>
-            </div>
+            <img src="/logo.svg" alt="Moso AI" className="h-7 w-7 rounded-lg" />
+            <span className="font-serif text-[21px] leading-none tracking-tight text-white">Moso AI</span>
           </div>
 
           <Button
@@ -193,14 +184,14 @@ export const Sidebar: React.FC = () => {
 
         {/* Workspace Mode Switcher (Chats vs Research Projects) */}
         <div className="px-3 pt-2.5 pb-1">
-          <div className="grid grid-cols-2 p-0.5 rounded-lg bg-moso-950/80 border border-moso-800 text-xs">
+          <div className="grid grid-cols-2 p-0.5 rounded-lg bg-moso-800/60 text-xs">
             <button
               type="button"
               onClick={() => setWorkspaceMode('chat')}
               className={cn(
                 'flex items-center justify-center gap-1.5 py-1.5 rounded-md font-medium transition-all cursor-pointer',
                 workspaceMode === 'chat'
-                  ? 'bg-moso-800 text-white shadow-xs'
+                  ? 'bg-moso-900 text-white shadow-sm'
                   : 'text-moso-400 hover:text-moso-200'
               )}
             >
@@ -213,11 +204,11 @@ export const Sidebar: React.FC = () => {
               className={cn(
                 'flex items-center justify-center gap-1.5 py-1.5 rounded-md font-medium transition-all cursor-pointer',
                 workspaceMode === 'project'
-                  ? 'bg-moso-800 text-emerald-400 shadow-xs'
+                  ? 'bg-moso-900 text-white shadow-sm'
                   : 'text-moso-400 hover:text-moso-200'
               )}
             >
-              <BookOpen className="h-3.5 w-3.5 text-emerald-400" />
+              <BookOpen className="h-3.5 w-3.5" />
               <span>Projects</span>
             </button>
           </div>
@@ -227,20 +218,20 @@ export const Sidebar: React.FC = () => {
         {workspaceMode === 'chat' ? (
           <>
             {/* New Conversation Button */}
-            <div className="p-3 pb-2">
-              <Button
-                variant="primary"
+            <div className="px-2 pt-2 pb-1">
+              <button
+                type="button"
                 onClick={() => createNewConversation()}
-                className="w-full justify-between shadow-sm group"
+                className="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-[14px] font-medium text-moso-100 hover:bg-moso-800/70 transition-colors cursor-pointer"
               >
-                <span className="flex items-center gap-2">
-                  <Plus className="h-4 w-4 stroke-[2.5]" />
-                  <span>New Conversation</span>
+                <span className="flex items-center gap-2.5">
+                  <span className="h-6 w-6 rounded-full bg-moso-accent text-moso-950 flex items-center justify-center">
+                    <Plus className="h-3.5 w-3.5 stroke-[2.75]" />
+                  </span>
+                  <span>New chat</span>
                 </span>
-                <kbd className="hidden sm:inline-block text-[10px] font-mono bg-moso-950/30 text-moso-950 px-1.5 py-0.5 rounded border border-moso-950/20">
-                  Ctrl+N
-                </kbd>
-              </Button>
+                <kbd className="hidden sm:inline-block text-[11px] font-sans text-moso-500">Ctrl+N</kbd>
+              </button>
             </div>
 
             {/* Search Conversations Input */}
@@ -250,7 +241,7 @@ export const Sidebar: React.FC = () => {
                 placeholder="Search conversations..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="text-xs py-1.5 bg-moso-950/60 border-moso-800"
+                className="text-[13px] py-1.5 bg-moso-900/70 border-moso-750"
               />
             </div>
 
@@ -273,7 +264,7 @@ export const Sidebar: React.FC = () => {
 
                   return (
                     <div key={group} className="space-y-0.5">
-                      <div className="px-2.5 py-1 text-[11px] font-semibold tracking-wider text-moso-400 uppercase">
+                      <div className="px-2.5 pt-2 pb-1 text-[12px] font-medium text-moso-500">
                         {group}
                       </div>
                       {items.map((conv) => {
@@ -285,10 +276,10 @@ export const Sidebar: React.FC = () => {
                             key={conv.id}
                             onClick={() => !isEditing && selectConversation(conv.id)}
                             className={cn(
-                              'group relative flex items-center justify-between px-2.5 py-2 rounded-lg text-[13.5px] cursor-pointer transition-all duration-150',
+                              'group relative flex items-center justify-between px-2.5 py-2 rounded-lg text-[14px] cursor-pointer transition-colors duration-150',
                               isActive
-                                ? 'bg-moso-800 text-white font-medium shadow-xs border-l-2 border-moso-accent pl-2'
-                                : 'text-moso-300 hover:bg-moso-850 hover:text-white'
+                                ? 'bg-moso-800 text-white'
+                                : 'text-moso-200 hover:bg-moso-800/60 hover:text-white'
                             )}
                           >
                             {isEditing ? (
@@ -307,7 +298,7 @@ export const Sidebar: React.FC = () => {
                                 <button
                                   type="button"
                                   onClick={() => saveEditing(conv.id)}
-                                  className="text-emerald-400 hover:text-emerald-300 p-0.5"
+                                  className="text-accent-400 hover:text-accent-300 p-0.5"
                                 >
                                   <Check className="h-3.5 w-3.5" />
                                 </button>
@@ -322,12 +313,6 @@ export const Sidebar: React.FC = () => {
                             ) : (
                               <>
                                 <div className="flex items-center gap-2 min-w-0 pr-2">
-                                  <MessageSquare
-                                    className={cn(
-                                      'h-3.5 w-3.5 shrink-0',
-                                      isActive ? 'text-moso-accent' : 'text-moso-500 group-hover:text-moso-400'
-                                    )}
-                                  />
                                   <span className="truncate">{conv.title}</span>
                                   {conv.documents && conv.documents.length > 0 && (
                                     <span
@@ -379,7 +364,7 @@ export const Sidebar: React.FC = () => {
               <Button
                 variant="primary"
                 onClick={() => setIsNewProjectModalOpen(true)}
-                className="w-full justify-between shadow-sm bg-emerald-600 hover:bg-emerald-500"
+                className="w-full justify-between shadow-sm bg-accent-600 hover:bg-accent-500"
               >
                 <span className="flex items-center gap-2">
                   <FolderPlus className="h-4 w-4 stroke-[2.5]" />
@@ -391,7 +376,7 @@ export const Sidebar: React.FC = () => {
             <div className="flex-1 overflow-y-auto px-2 py-2 space-y-1.5">
               {projects.length === 0 ? (
                 <div className="p-6 text-center text-xs text-moso-500">
-                  <BookOpen className="h-8 w-8 mx-auto mb-2 opacity-30 text-emerald-400" />
+                  <BookOpen className="h-8 w-8 mx-auto mb-2 opacity-30 text-accent-400" />
                   <p>No research projects yet.</p>
                   <p className="mt-1 text-[11px] text-moso-600">
                     Create a dedicated workspace for academic papers and mathematical analysis.
@@ -407,7 +392,7 @@ export const Sidebar: React.FC = () => {
                       className={cn(
                         'group relative flex items-center justify-between px-3 py-2.5 rounded-xl text-[13.5px] cursor-pointer transition-all duration-150',
                         isActive
-                          ? 'bg-emerald-950/40 border border-emerald-500/30 text-white font-medium shadow-xs'
+                          ? 'bg-accent-950/40 border border-accent-500/30 text-white font-medium shadow-xs'
                           : 'text-moso-300 hover:bg-moso-850 hover:text-white border border-transparent'
                       )}
                     >
@@ -415,7 +400,7 @@ export const Sidebar: React.FC = () => {
                         <BookOpen
                           className={cn(
                             'h-4 w-4 shrink-0',
-                            isActive ? 'text-emerald-400' : 'text-moso-500 group-hover:text-emerald-400'
+                            isActive ? 'text-accent-400' : 'text-moso-500 group-hover:text-accent-400'
                           )}
                         />
                         <div className="truncate">
@@ -447,62 +432,48 @@ export const Sidebar: React.FC = () => {
           </div>
         )}
 
-        {/* Footer: Model & Connection Status & Settings */}
-        <div className="p-3 border-t border-moso-800/80 bg-moso-950/40 space-y-2">
-          {/* Active Model Indicator */}
-          <div className="flex items-center justify-between text-xs px-2 py-1.5 rounded-lg bg-moso-850/70 border border-moso-800">
-            <div className="flex items-center gap-2 truncate">
-              <Cpu className="h-3.5 w-3.5 text-moso-accent shrink-0" />
-              <span className="text-moso-300 truncate font-medium">
-                {currentModel?.name || selectedModel}
-              </span>
-            </div>
-            <span className="text-[10px] text-moso-500 font-mono shrink-0">
-              {currentModel?.size || '2B'}
+        {/* Footer: connection status and settings */}
+        <div className="p-2 border-t border-moso-750/60">
+          <div
+            className="flex items-center gap-2 px-2.5 py-1.5 text-[12px] text-moso-500"
+            title={`Model: ${currentModel?.name || selectedModel}`}
+          >
+            <span
+              className={cn(
+                'h-1.5 w-1.5 rounded-full shrink-0',
+                connectionState === 'connected' && 'bg-moso-accent',
+                connectionState === 'connecting' && 'bg-amber-500 animate-pulse',
+                connectionState === 'generating' && 'bg-moso-accent animate-pulse',
+                connectionState === 'disconnected' && 'bg-rose-500'
+              )}
+            />
+            <span className="truncate">
+              {connectionState === 'connected'
+                ? isMockMode
+                  ? 'Mock server'
+                  : 'Running on this device'
+                : connectionState === 'generating'
+                ? 'Generating'
+                : connectionState === 'connecting'
+                ? 'Connecting'
+                : 'Disconnected'}
             </span>
+            {isMockMode && <span className="font-mono text-[10px] text-cyan-400">dev mock</span>}
           </div>
 
-          {/* Connection Status Pill */}
-          <div className="flex items-center justify-between px-2 text-xs">
-            <div className="flex items-center gap-2">
-              <span
-                className={cn(
-                  'h-2 w-2 rounded-full',
-                  connectionState === 'connected' && 'bg-emerald-500',
-                  connectionState === 'connecting' && 'bg-amber-500 animate-pulse',
-                  connectionState === 'generating' && 'bg-moso-accent animate-ping',
-                  connectionState === 'disconnected' && 'bg-rose-500'
-                )}
-              />
-              <span className="text-[11px] text-moso-400 capitalize">
-                {connectionState === 'connected'
-                  ? isMockMode
-                    ? 'Mock Local Server'
-                    : 'Backend Online'
-                  : connectionState}
-              </span>
-            </div>
-            {isMockMode && (
-              <span className="text-[9px] text-cyan-400 font-mono bg-cyan-950/40 px-1 rounded border border-cyan-800/40">
-                DEV MOCK
-              </span>
-            )}
-          </div>
-
-          {/* Settings Trigger */}
           <button
             type="button"
             onClick={() => {
               openSettings();
               if (window.innerWidth < 768) setSidebarOpen(false);
             }}
-            className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs text-moso-400 hover:text-white hover:bg-moso-850 transition-colors cursor-pointer"
+            className="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-[13.5px] text-moso-300 hover:text-white hover:bg-moso-800/60 transition-colors cursor-pointer"
           >
-            <span className="flex items-center gap-2">
-              <Settings className="h-3.5 w-3.5" />
+            <span className="flex items-center gap-2.5">
+              <Settings className="h-4 w-4" />
               <span>Settings</span>
             </span>
-            <kbd className="text-[10px] font-mono text-moso-500">Ctrl+,</kbd>
+            <kbd className="text-[11px] font-sans text-moso-500">Ctrl+,</kbd>
           </button>
         </div>
       </aside>
@@ -543,7 +514,7 @@ export const Sidebar: React.FC = () => {
               value={newProjectName}
               onChange={(e) => setNewProjectName(e.target.value)}
               placeholder="e.g. Deep Learning Image Segmentation"
-              className="w-full bg-moso-850 border border-moso-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+              className="w-full bg-moso-850 border border-moso-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accent-500"
               autoFocus
             />
           </div>
@@ -556,7 +527,7 @@ export const Sidebar: React.FC = () => {
               onChange={(e) => setNewProjectDesc(e.target.value)}
               placeholder="e.g. Evaluating convolutional vs transformer backbones on biomedical benchmarks."
               rows={3}
-              className="w-full bg-moso-850 border border-moso-700 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+              className="w-full bg-moso-850 border border-moso-700 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-accent-500"
             />
           </div>
           <div className="flex justify-end gap-2 pt-3 border-t border-moso-800">

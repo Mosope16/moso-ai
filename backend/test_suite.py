@@ -13,7 +13,7 @@ import httpx
 # Ensure backend module is importable
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from backend.main import app, DB_FILE, get_db
+from backend.main import app, DB_FILE, get_db, DEFAULT_MODEL
 
 async def run_tests():
     print("=" * 60)
@@ -34,7 +34,7 @@ async def run_tests():
         assert resp.status_code == 200, "Health check failed"
         assert health_data["database"] == "sqlite", "Database should be sqlite"
         assert health_data["database_connected"] is True, "Database should be connected"
-        assert health_data["active_model"] == "qwen3.5:2b", "Active model should be qwen3.5:2b"
+        assert health_data["active_model"] == DEFAULT_MODEL, f"Active model should be {DEFAULT_MODEL}"
         print("✓ Health endpoint verified")
 
         # --------------------------------------------------
@@ -48,8 +48,8 @@ async def run_tests():
         print(f"Retrieved {len(models)} model(s): {[m['id'] for m in models]}")
         default_model = next((m for m in models if m.get("is_default")), None)
         assert default_model is not None, "A default model must be returned"
-        assert default_model["id"] == "qwen3.5:2b", f"Default model must be qwen3.5:2b, got {default_model['id']}"
-        print("✓ Models endpoint verified (qwen3.5:2b is default)")
+        assert default_model["id"] == DEFAULT_MODEL, f"Default model must be {DEFAULT_MODEL}, got {default_model['id']}"
+        print(f"✓ Models endpoint verified ({DEFAULT_MODEL} is default)")
 
         # --------------------------------------------------
         # 3. Test Conversation Lifecycle (CRUD)
@@ -59,7 +59,7 @@ async def run_tests():
         # 3a. Create
         create_resp = await client.post("/api/v1/conversations", json={
             "title": "Initial Test Conversation",
-            "model": "qwen3.5:2b"
+            "model": DEFAULT_MODEL
         })
         assert create_resp.status_code == 201, "Create conversation failed"
         conv = create_resp.json()
@@ -98,7 +98,7 @@ async def run_tests():
         prompt_text = "What is 2+2? Answer in one word."
         chat_req = {
             "conversation_id": conv_id,
-            "model": "qwen3.5:2b",
+            "model": DEFAULT_MODEL,
             "messages": [
                 {"role": "user", "content": prompt_text}
             ],

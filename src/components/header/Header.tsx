@@ -42,16 +42,21 @@ export const Header: React.FC = () => {
   const [isOverflowMenuOpen, setIsOverflowMenuOpen] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleInput, setTitleInput] = useState('');
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const mobileDropdownRef = useRef<HTMLDivElement>(null);
+  const desktopDropdownRef = useRef<HTMLDivElement>(null);
   const overflowRef = useRef<HTMLDivElement>(null);
 
   // Close dropdowns on click outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      const clickedInsideDropdown =
+        (mobileDropdownRef.current && mobileDropdownRef.current.contains(target)) ||
+        (desktopDropdownRef.current && desktopDropdownRef.current.contains(target));
+      if (!clickedInsideDropdown) {
         setIsModelDropdownOpen(false);
       }
-      if (overflowRef.current && !overflowRef.current.contains(e.target as Node)) {
+      if (overflowRef.current && !overflowRef.current.contains(target)) {
         setIsOverflowMenuOpen(false);
       }
     };
@@ -80,16 +85,11 @@ export const Header: React.FC = () => {
     switch (connectionState) {
       case 'connected':
         return (
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span className="font-medium">Ollama Local</span>
+          <div className="flex items-center gap-1.5 px-2 py-1 text-xs text-moso-400">
+            <span className="inline-flex rounded-full h-1.5 w-1.5 bg-accent-500"></span>
+            <span>Ollama</span>
             {healthInfo?.latency_ms && (
-              <span className="text-[10px] text-emerald-500/70 border-l border-emerald-500/20 pl-1.5 ml-0.5">
-                {healthInfo.latency_ms}ms
-              </span>
+              <span className="text-[11px] text-moso-500">{healthInfo.latency_ms}ms</span>
             )}
           </div>
         );
@@ -137,8 +137,8 @@ export const Header: React.FC = () => {
             onClick={openSettings}
             title={`Ollama Local Connected${healthInfo?.latency_ms ? ` (${healthInfo.latency_ms}ms)` : ''}`}
           >
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-400 opacity-60"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent-500"></span>
           </span>
         );
       case 'connecting':
@@ -171,7 +171,7 @@ export const Header: React.FC = () => {
   return (
     <header
       data-tauri-drag-region
-      className="h-14 border-b border-moso-800/80 bg-moso-900/90 backdrop-blur-md px-3 sm:px-4 flex items-center justify-between select-none z-20 shrink-0"
+      className="h-14 bg-moso-950 px-3 sm:px-4 flex items-center justify-between select-none z-20 shrink-0"
     >
       {/* Mobile Left: Menu Toggle + Logo + Compact Title */}
       <div className="flex md:hidden items-center gap-2 min-w-0 flex-1 pr-2" data-tauri-no-drag>
@@ -224,7 +224,7 @@ export const Header: React.FC = () => {
               <h2 className="text-sm font-semibold text-white truncate max-w-[200px] sm:max-w-xs md:max-w-md">
                 {activeProject ? activeProject.name : 'Research Workspace'}
               </h2>
-              <span className="text-[10px] uppercase font-mono px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+              <span className="text-[10px] uppercase font-mono px-1.5 py-0.2 rounded bg-accent-500/15 text-accent-400 border border-accent-500/30">
                 Workspace
               </span>
             </div>
@@ -245,8 +245,8 @@ export const Header: React.FC = () => {
             <h2
               onClick={handleStartRename}
               className={cn(
-                'text-[14.5px] font-semibold text-white truncate cursor-pointer hover:text-emerald-400 transition-colors max-w-[200px] sm:max-w-xs md:max-w-md',
-                !activeConversation && 'text-moso-400 font-normal italic'
+                'text-[15px] font-medium text-moso-200 truncate cursor-pointer hover:text-white transition-colors max-w-[200px] sm:max-w-xs md:max-w-md',
+                !activeConversation && 'text-moso-400 font-normal'
               )}
               title={activeConversation?.title || 'New Session'}
             >
@@ -270,7 +270,7 @@ export const Header: React.FC = () => {
         </button>
 
         {/* Compact Model Selector */}
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative" ref={mobileDropdownRef}>
           <button
             type="button"
             onClick={() => setIsModelDropdownOpen((prev) => !prev)}
@@ -278,7 +278,7 @@ export const Header: React.FC = () => {
           >
             <Cpu className="h-3 w-3 text-moso-accent" />
             <span className="font-semibold text-[11px] max-w-[70px] truncate">
-              {currentModelInfo?.name.replace(/^(Qwen|Ollama)\s*/i, '') || '2B'}
+              {currentModelInfo?.name.replace(/^(Qwen|Ollama)\s*/i, '') || selectedModel.split(':')[1] || '4B'}
             </span>
             <ChevronDown
               className={cn(
@@ -291,7 +291,7 @@ export const Header: React.FC = () => {
           {/* Mobile Model Dropdown Menu */}
           {isModelDropdownOpen && (
             <div className="absolute right-0 mt-2 w-64 rounded-xl bg-moso-900 border border-moso-700 shadow-2xl p-1.5 z-50 animate-slide-up">
-              <div className="px-2.5 py-1.5 text-[10px] font-semibold text-moso-400 uppercase tracking-wider border-b border-moso-800">
+              <div className="px-2.5 py-1.5 text-[10px] font-medium text-moso-400 border-b border-moso-800">
                 Local Models (Ollama)
               </div>
               <div className="py-1 max-h-60 overflow-y-auto">
@@ -388,14 +388,13 @@ export const Header: React.FC = () => {
       {/* Desktop Right side: Model selector, connection pill, mock mode badge, settings */}
       <div className="hidden md:flex items-center gap-2.5 shrink-0" data-tauri-no-drag>
         {/* Model Selector Dropdown */}
-        <div className="relative">
+        <div className="relative" ref={desktopDropdownRef}>
           <button
             type="button"
             onClick={() => setIsModelDropdownOpen((prev) => !prev)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-moso-800/80 hover:bg-moso-750 border border-moso-700/60 transition-all text-[13px] text-moso-200 hover:text-white cursor-pointer"
+            className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-moso-800/70 transition-colors text-[14px] text-moso-200 hover:text-white cursor-pointer"
           >
-            <Cpu className="h-3.5 w-3.5 text-moso-accent" />
-            <span className="font-semibold">{currentModelInfo?.name || selectedModel}</span>
+            <span className="font-medium">{currentModelInfo?.name || selectedModel}</span>
             <ChevronDown
               className={cn(
                 'h-3 w-3 text-moso-400 transition-transform duration-150',
@@ -407,7 +406,7 @@ export const Header: React.FC = () => {
           {/* Desktop Dropdown Menu */}
           {isModelDropdownOpen && (
             <div className="absolute right-0 mt-2 w-72 rounded-xl bg-moso-900 border border-moso-700/80 shadow-2xl p-1.5 z-50 animate-slide-up">
-              <div className="px-2.5 py-1.5 text-[11px] font-semibold text-moso-400 uppercase tracking-wider border-b border-moso-800">
+              <div className="px-2.5 py-1.5 text-[11px] font-medium text-moso-400 border-b border-moso-800">
                 Local Models (Ollama)
               </div>
               <div className="py-1">
@@ -450,7 +449,7 @@ export const Header: React.FC = () => {
                   ))}
               </div>
 
-              <div className="px-2.5 py-1.5 text-[11px] font-semibold text-moso-400 uppercase tracking-wider border-t border-b border-moso-800 mt-1">
+              <div className="px-2.5 py-1.5 text-[11px] font-medium text-moso-400 border-t border-b border-moso-800 mt-1">
                 Cloud Providers (Future)
               </div>
               <div className="py-1 opacity-60">
@@ -489,11 +488,11 @@ export const Header: React.FC = () => {
             'flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-medium border transition-colors cursor-pointer',
             isMockMode
               ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20'
-              : 'bg-moso-850 border-moso-750 text-moso-400 hover:text-moso-200'
+              : 'border-transparent text-moso-500 hover:text-moso-200 hover:bg-moso-800/70'
           )}
         >
           <Radio className={cn('h-3 w-3', isMockMode ? 'text-cyan-400' : 'text-moso-500')} />
-          <span>{isMockMode ? 'Dev Mock Mode' : 'Live Mode'}</span>
+          <span className={isMockMode ? '' : 'sr-only'}>{isMockMode ? 'Dev Mock Mode' : 'Live Mode'}</span>
         </button>
 
         {/* Settings Button */}
